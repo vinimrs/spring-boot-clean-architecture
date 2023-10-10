@@ -1,0 +1,413 @@
+{
+	"info": {
+		"_postman_id": "750c794a-0af6-4daf-8c50-195dbe99b596",
+		"name": "AA3",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "23992773",
+		"_collection_link": "https://dark-comet-943526.postman.co/workspace/DSW1~adaac79e-d716-41db-afab-3e6003699920/collection/23992773-750c794a-0af6-4daf-8c50-195dbe99b596?action=share&source=collection_link&creator=23992773"
+	},
+	"item": [
+		{
+			"name": "Admins CRUD",
+			"item": [
+				{
+					"name": "Listar admins",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}/admins"
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastrar admin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"bessa\",\n    \"name\": \"Matheus Bessa\",\n    \"email\": \"bessa@email.com\",\n    \"password\": \"12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/admins"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar admin",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"username1\",\n    \"password\": \"\",\n    \"name\": \"\",\n    \"email\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/admins/13"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar admin",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{BASE_URL}}/admins/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Detalhar admin",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}/admins/26"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Clientes CRUD",
+			"item": [
+				{
+					"name": "Listar clientes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text"
+							}
+						],
+						"url": "{{BASE_URL}}/clientes"
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastrar cliente",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"julia12\",\n    \"name\": \"Vinícius Santos\",\n    \"password\": \"12345\",\n    \"email\": \"julia12@vini.com\",\n    \"sex\": \"FEMININO\",\n    \"birthdate\": \"12/04/2022\",\n    \"phoneNumber\": \"(33) 99999-9999\",\n    \"cpf\": \"000.112.222-34\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/clientes"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar cliente",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-br",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"novonomeusuario\",\n    \"password\": \"\",\n    \"email\": \"\",\n    \"name\": \"Vinícius Romualdo Santos\",\n    \"cpf\": \"\",\n    \"sex\": \"MASCULINO\",\n    \"birthdate\": \"\",\n    \"phoneNumber\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/clientes/28"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar cliente",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{BASE_URL}}/clientes/23"
+					},
+					"response": []
+				},
+				{
+					"name": "Detalhar cliente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}/clientes/28"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Locadoras CRUD",
+			"item": [
+				{
+					"name": "Listar locadoras",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}/locadoras"
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastrar locadora",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"jose\",\n    \"name\": \"Locadora do José\",\n    \"password\": \"12345\",\n    \"cnpj\": \"00.000.000/0000-02\",\n    \"city\": \"São Paulo\",\n    \"email\": \"jose@jose.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/locadoras"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar locadora",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-br",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"joseNovo\",\n    \"password\": \"\",\n    \"name\": \"\",\n    \"email\": \"\",\n    \"cnpj\": \"\",\n    \"city\": \"São Paulo\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/locadoras/25"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar locadora",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{BASE_URL}}/locadoras/25"
+					},
+					"response": []
+				},
+				{
+					"name": "Detalhar locadora",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}/locadoras/162"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar locadoras por cidade",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}/locadoras/cidades/Maceió"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Explorar locadoras",
+			"item": [
+				{
+					"name": "Listar locadoras",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}/explorar"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar por cidade",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/explorar?city=Maceió",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"explorar"
+							],
+							"query": [
+								{
+									"key": "city",
+									"value": "Maceió"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar cidades",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}/locadoras/cidades"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Locacoes",
+			"item": [
+				{
+					"name": "Listar locacoes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}/locacoes"
+					},
+					"response": []
+				},
+				{
+					"name": "Cadastrar locacao",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-br",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"hour\": \"20:00\",\n    \"date\": \"29/08/2023\",\n    \"rentalCompanyId\": 18,\n    \"clientId\": 22\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{BASE_URL}}/locacoes"
+					},
+					"response": []
+				},
+				{
+					"name": "Detalhar locacao",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}/locacoes/12"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar locacao",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{BASE_URL}}/locacoes/12"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar locacoes por cliente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}/locacoes/clientes/22"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar locacoes por locadora",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{BASE_URL}}/locacoes/locadoras/18"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
