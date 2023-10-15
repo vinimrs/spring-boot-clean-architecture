@@ -15,12 +15,9 @@ public class SearchClienteUseCase {
         this.clienteGateway = clienteGateway;
     }
 
-    public Output execute() {
-        return new Output(this.clienteGateway.findAll());
+    public List<Cliente> execute() {
+        return this.clienteGateway.findAll();
     }
 
-    public record Output(
-            List<Cliente> clientes
-    ) {}
 
 }

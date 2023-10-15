@@ -3,6 +3,7 @@ package br.ufscar.dc.dsw.locadora.infrastructure.cliente.controller;
 import br.ufscar.dc.dsw.locadora.entity.cliente.exception.ClienteNotFoundException;
 import br.ufscar.dc.dsw.locadora.entity.cliente.model.Cliente;
 import br.ufscar.dc.dsw.locadora.entity.cliente.model.Sexo;
+import br.ufscar.dc.dsw.locadora.infrastructure.cliente.dto.DadosPublicosCliente;
 import br.ufscar.dc.dsw.locadora.usecase.cliente.CreateClienteUseCase;
 import br.ufscar.dc.dsw.locadora.usecase.cliente.GetClienteUseCase;
 import org.springframework.http.HttpStatus;
@@ -21,13 +22,10 @@ public class GetClienteController {
 
     @GetMapping("/clientes/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public Response createCliente(@PathVariable Long id) throws ClienteNotFoundException {
-        var output = getClienteUseCase.execute(new GetClienteUseCase.Input(id));
+    public DadosPublicosCliente getCliente(@PathVariable Long id) throws ClienteNotFoundException {
+        Cliente cliente = getClienteUseCase.execute(id);
 
-        return new Response(output.cliente());
+        return new DadosPublicosCliente(cliente);
     }
 
-    public record Response(
-            Cliente cliente
-    ) {}
 }

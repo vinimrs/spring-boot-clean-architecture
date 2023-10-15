@@ -14,15 +14,10 @@ public class GetClienteUseCase {
         this.clienteGateway = clienteGateway;
     }
 
-    public Output execute(Input input) throws ClienteNotFoundException {
-        Cliente cliente = this.clienteGateway
-                .findById(input.id())
+    public Cliente execute(Long id) throws ClienteNotFoundException {
+        return this.clienteGateway
+                .findById(id)
                 .orElseThrow(ClienteNotFoundException::new);
-
-        return new Output(cliente);
     }
 
-    public record Input(Long id) {}
-
-    public record Output(Cliente cliente) {}
 }

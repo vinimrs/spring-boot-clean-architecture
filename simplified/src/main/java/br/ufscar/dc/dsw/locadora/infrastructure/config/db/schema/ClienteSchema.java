@@ -2,10 +2,10 @@ package br.ufscar.dc.dsw.locadora.infrastructure.config.db.schema;
 
 import br.ufscar.dc.dsw.locadora.entity.cliente.model.Cliente;
 import br.ufscar.dc.dsw.locadora.entity.cliente.model.Sexo;
+import br.ufscar.dc.dsw.locadora.infrastructure.cliente.validation.formats.CPF;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.br.CPF;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -40,14 +40,6 @@ public class ClienteSchema extends UsuarioSchema {
     this.role = "ROLE_CLIENTE";
   }
 
-//  public ClienteSchema(DadosCadastroCliente dados) {
-//    super(dados.username(), dados.password(), dados.name(), dados.email());
-//    this.role = "ROLE_CLIENTE";
-//    this.cpf = dados.cpf();
-//    this.phoneNumber = dados.phoneNumber();
-//    this.sex = Sexo.valueOf(dados.sex());
-//    this.birthdate = LocalDate.parse(dados.birthdate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-//  }
 
   public ClienteSchema(Cliente cliente) {
     super(cliente.getId(), cliente.getUsername(), cliente.getName(), cliente.getEmail(), cliente.getPassword());
@@ -55,6 +47,8 @@ public class ClienteSchema extends UsuarioSchema {
     this.phoneNumber = cliente.getPhoneNumber();
     this.sex = cliente.getSex();
     this.birthdate = cliente.getBirthdate();
+
+    this.role = "ROLE_CLIENTE";
   }
 
   public String getCpf() {
@@ -97,42 +91,8 @@ public class ClienteSchema extends UsuarioSchema {
     this.locacoes = locacoes;
   }
 
-//  public void atualizar(DadosAtualizacaoCliente dados) {
-//    if (dados.username() != null && !dados.username().isBlank()) {
-//      this.setUsername(dados.username());
-//    }
-//
-//    if (dados.password() != null && !dados.password().isBlank()) {
-//      this.setPassword(dados.password());
-//    }
-//
-//    if (dados.name() != null && !dados.name().isBlank()) {
-//      this.setName(dados.name());
-//    }
-//
-//    if (dados.email() != null && !dados.email().isBlank()) {
-//      this.setEmail(dados.email());
-//    }
-//
-//    if (dados.cpf() != null && !dados.cpf().isBlank()) {
-//      this.setCpf(dados.cpf());
-//    }
-//
-//    if (dados.phoneNumber() != null && !dados.phoneNumber().isBlank()) {
-//      this.setPhoneNumber(dados.phoneNumber());
-//    }
-//
-//    if (dados.sex() != null && !dados.sex().isBlank()) {
-//      this.setSex(Sexo.valueOf(dados.sex()));
-//    }
-//
-//    if (dados.birthdate() != null && !dados.birthdate().isBlank()) {
-//      this.setBirthdate(LocalDate.parse(dados.birthdate(), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-//    }
-//  }
-
   public Cliente toCliente() {
-    return new Cliente(
+    Cliente cliente = new Cliente(
             this.getUsername(),
             this.getPassword(),
             this.getName(),
@@ -142,5 +102,7 @@ public class ClienteSchema extends UsuarioSchema {
             this.sex,
             this.birthdate
     );
+    cliente.setId(this.getId()); // transforma o id do schema (gerado pelo banco de dados em id do cliente
+    return cliente;
   }
 }

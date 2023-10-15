@@ -1,5 +1,6 @@
 package br.ufscar.dc.dsw.locadora.infrastructure.config.db.schema;
 
+import br.ufscar.dc.dsw.locadora.entity.usuario.model.Usuario;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
@@ -114,4 +115,5 @@ public abstract class UsuarioSchema extends AbstractEntitySchema<Long> {
     public void setEmail(String email) {
         this.email = email;
     }
+
 }

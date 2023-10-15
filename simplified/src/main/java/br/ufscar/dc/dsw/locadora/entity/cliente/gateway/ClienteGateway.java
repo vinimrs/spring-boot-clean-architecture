@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ClienteGateway {
-    void create(Cliente cliente);
+    Cliente create(Cliente cliente);
     void update(Cliente cliente);
     void delete(Long id);
 

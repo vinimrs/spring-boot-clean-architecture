@@ -2,6 +2,7 @@ package br.ufscar.dc.dsw.locadora.infrastructure.cliente.controller;
 
 import br.ufscar.dc.dsw.locadora.entity.cliente.model.Cliente;
 import br.ufscar.dc.dsw.locadora.entity.cliente.model.Sexo;
+import br.ufscar.dc.dsw.locadora.infrastructure.cliente.dto.DadosPublicosCliente;
 import br.ufscar.dc.dsw.locadora.usecase.cliente.CreateClienteUseCase;
 import br.ufscar.dc.dsw.locadora.usecase.cliente.SearchClienteUseCase;
 import org.springframework.http.HttpStatus;
@@ -21,13 +22,10 @@ public class SearchClienteController {
 
     @GetMapping("/clientes")
     @ResponseStatus(HttpStatus.OK)
-    public Response searchCliente() {
-        var output = this.searchClienteUseCase.execute();
+    public List<DadosPublicosCliente> searchCliente() {
+        List<Cliente> clientes = this.searchClienteUseCase.execute();
 
-        return new Response(output.clientes());
+        return clientes.stream().map(DadosPublicosCliente::new).toList();
     }
 
-    public record Response(
-            List<Cliente> clientes
-    ) {}
 }

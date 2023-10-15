@@ -1,6 +1,6 @@
 package br.ufscar.dc.dsw.locadora.infrastructure.cliente.validation.formats;
 
-import br.ufscar.dc.dsw.locadora.domain.Sexo;
+import br.ufscar.dc.dsw.locadora.entity.cliente.model.Sexo;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.stereotype.Component;

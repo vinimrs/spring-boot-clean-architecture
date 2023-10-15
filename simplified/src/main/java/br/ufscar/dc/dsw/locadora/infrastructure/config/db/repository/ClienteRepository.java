@@ -1,5 +1,6 @@
 package br.ufscar.dc.dsw.locadora.infrastructure.config.db.repository;
 
+import br.ufscar.dc.dsw.locadora.entity.cliente.gateway.ClienteGateway;
 import br.ufscar.dc.dsw.locadora.infrastructure.config.db.schema.ClienteSchema;
 import org.springframework.data.jpa.repository.JpaRepository;
 
