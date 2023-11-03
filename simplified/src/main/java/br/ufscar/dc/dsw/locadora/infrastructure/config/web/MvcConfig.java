@@ -2,15 +2,19 @@ package br.ufscar.dc.dsw.locadora.infrastructure.config.web;
 
 import br.ufscar.dc.dsw.locadora.entity.admin.gateway.AdminGateway;
 import br.ufscar.dc.dsw.locadora.entity.cliente.gateway.ClienteGateway;
+import br.ufscar.dc.dsw.locadora.entity.locacao.gateway.LocacaoGateway;
 import br.ufscar.dc.dsw.locadora.entity.locadora.gateway.LocadoraGateway;
 import br.ufscar.dc.dsw.locadora.infrastructure.admin.gateway.AdminDatabaseGateway;
 import br.ufscar.dc.dsw.locadora.infrastructure.cliente.gateway.ClienteDatabaseGateway;
 import br.ufscar.dc.dsw.locadora.infrastructure.config.db.repository.AdminRepository;
 import br.ufscar.dc.dsw.locadora.infrastructure.config.db.repository.ClienteRepository;
+import br.ufscar.dc.dsw.locadora.infrastructure.config.db.repository.LocacaoRepository;
 import br.ufscar.dc.dsw.locadora.infrastructure.config.db.repository.LocadoraRepository;
+import br.ufscar.dc.dsw.locadora.infrastructure.locacao.gateway.LocacaoDatabaseGateway;
 import br.ufscar.dc.dsw.locadora.infrastructure.locadora.gateway.LocadoraDatabaseGateway;
 import br.ufscar.dc.dsw.locadora.usecase.admin.*;
 import br.ufscar.dc.dsw.locadora.usecase.cliente.*;
+import br.ufscar.dc.dsw.locadora.usecase.locacao.*;
 import br.ufscar.dc.dsw.locadora.usecase.locadora.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -125,5 +129,48 @@ public class MvcConfig {
   public DeleteAdminUseCase deleteAdminUseCase(AdminRepository adminRepository) {
     AdminGateway adminGateway = new AdminDatabaseGateway(adminRepository);
     return new DeleteAdminUseCase(adminGateway);
+  }
+
+  @Bean
+  public DeleteLocacaoUseCase deleteLocacaoUseCase(LocacaoRepository locacaoRepository) {
+    LocacaoGateway locacaoGateway = new LocacaoDatabaseGateway(locacaoRepository);
+    return new DeleteLocacaoUseCase(locacaoGateway);
+  }
+
+  @Bean
+  public CreateLocacaoUseCase createLocacaoUseCase(LocacaoRepository locacaoRepository, LocadoraRepository locadoraRepository, ClienteRepository clienteRepository) {
+    LocacaoGateway locacaoGateway = new LocacaoDatabaseGateway(locacaoRepository);
+    LocadoraGateway locadoraGateway = new LocadoraDatabaseGateway(locadoraRepository);
+    ClienteGateway clienteGateway = new ClienteDatabaseGateway(clienteRepository);
+
+    return new CreateLocacaoUseCase(locacaoGateway, locadoraGateway, clienteGateway);
+  }
+
+  @Bean
+  public GetLocacaoUseCase getLocacaoUseCase(LocacaoRepository locacaoRepository) {
+    LocacaoGateway locacaoGateway = new LocacaoDatabaseGateway(locacaoRepository);
+    return new GetLocacaoUseCase(locacaoGateway);
+  }
+
+  @Bean
+  public ListLocacoesByLocadoraUseCase listLocacoesByLocadoraUseCase(LocacaoRepository locacaoRepository, LocadoraRepository locadoraRepository) {
+    LocacaoGateway locacaoGateway = new LocacaoDatabaseGateway(locacaoRepository);
+    LocadoraGateway locadoraGateway = new LocadoraDatabaseGateway(locadoraRepository);
+
+    return new ListLocacoesByLocadoraUseCase(locacaoGateway, locadoraGateway);
+  }
+
+  @Bean
+  public ListLocacoesByClienteUseCase listLocacoesByClienteUseCase(LocacaoRepository locacaoRepository, ClienteRepository clienteRepository) {
+    LocacaoGateway locacaoGateway = new LocacaoDatabaseGateway(locacaoRepository);
+    ClienteGateway clienteGateway = new ClienteDatabaseGateway(clienteRepository);
+
+    return new ListLocacoesByClienteUseCase(locacaoGateway, clienteGateway);
+  }
+
+  @Bean
+  public SearchLocacaoUseCase searchLocacaoUseCase(LocacaoRepository locacaoRepository) {
+    LocacaoGateway locacaoGateway = new LocacaoDatabaseGateway(locacaoRepository);
+    return new SearchLocacaoUseCase(locacaoGateway);
   }
 }

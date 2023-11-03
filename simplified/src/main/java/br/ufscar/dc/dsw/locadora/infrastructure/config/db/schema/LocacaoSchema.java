@@ -1,6 +1,7 @@
 package br.ufscar.dc.dsw.locadora.infrastructure.config.db.schema;
 
 import br.ufscar.dc.dsw.locadora.entity.locacao.model.Locacao;
+import br.ufscar.dc.dsw.locadora.infrastructure.config.db.repository.LocacaoRepository;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -31,12 +32,12 @@ public class LocacaoSchema extends AbstractEntitySchema<Long> {
   @JoinColumn(name = "client_id")
   private ClienteSchema client;
 
-//  public LocacaoSchema(DadosCadastroLocacao locacao, Locadora locadora, Cliente cliente) {
-//    this.hour = LocalTime.parse(locacao.hour(), DateTimeFormatter.ofPattern("HH:00"));
-//    this.date = LocalDate.parse(locacao.date(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-//    this.rentalCompany = locadora;
-//    this.client = cliente;
-//  }
+  public LocacaoSchema(Locacao locacao) {
+    this.hour = locacao.getHour();
+    this.date = locacao.getDate();
+    this.rentalCompany = new LocadoraSchema(locacao.getRentalCompany());
+    this.client = new ClienteSchema(locacao.getClient());
+  }
 
   public LocacaoSchema() {
   }
@@ -75,11 +76,15 @@ public class LocacaoSchema extends AbstractEntitySchema<Long> {
   }
 
   public Locacao toLocacao() {
-    return new Locacao(
+    Locacao locacao = new Locacao(
             this.hour,
             this.date,
             this.rentalCompany.toLocadora(),
             this.client.toCliente()
     );
+
+    locacao.setId(this.getId());
+
+    return locacao;
   }
 }
