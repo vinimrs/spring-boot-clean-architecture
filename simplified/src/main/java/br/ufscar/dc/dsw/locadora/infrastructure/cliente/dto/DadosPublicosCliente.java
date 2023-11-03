@@ -20,9 +20,6 @@ public record DadosPublicosCliente(
 
         String username,
 
-
-        String password,
-
         String name,
 
         String email,
@@ -33,7 +30,6 @@ public record DadosPublicosCliente(
                 this(
                         cliente.getId().toString(),
                         cliente.getUsername(),
-                        cliente.getPassword(),
                         cliente.getName(),
                         cliente.getEmail(),
                         cliente.getPhoneNumber()

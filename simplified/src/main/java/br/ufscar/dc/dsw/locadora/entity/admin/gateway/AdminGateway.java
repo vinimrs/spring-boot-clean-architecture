@@ -2,13 +2,17 @@ package br.ufscar.dc.dsw.locadora.entity.admin.gateway;
 
 
 import br.ufscar.dc.dsw.locadora.entity.admin.model.Admin;
+import br.ufscar.dc.dsw.locadora.entity.locadora.model.Locadora;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AdminGateway {
-    void create(Admin admin);
-    void update(Admin admin);
+    Admin create(Admin admin);
+    Admin update(Admin admin);
     void delete(Long id);
 
     Optional<Admin> findById(Long id);
+
+    List<Admin> findAll();
 }
