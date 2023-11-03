@@ -13,6 +13,10 @@ public interface IDadosAtualizacaoCliente {
 
     String email();
 
+    String cpf();
+
+    String phoneNumber();
+
     String sex();
 
     String birthdate();

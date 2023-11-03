@@ -22,13 +22,13 @@ public class ClienteDatabaseGateway implements ClienteGateway {
     }
 
     @Override
-    public void update(Cliente cliente) {
-        clienteRepository.save(new ClienteSchema(cliente));
+    public Cliente update(Cliente cliente) {
+        return this.clienteRepository.save(new ClienteSchema(cliente)).toCliente();
     }
 
     @Override
     public void delete(Long id) {
-        clienteRepository.deleteById(id);
+        this.clienteRepository.deleteById(id);
     }
 
     @Override

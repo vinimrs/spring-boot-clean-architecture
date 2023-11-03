@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface ClienteGateway {
     Cliente create(Cliente cliente);
-    void update(Cliente cliente);
+    Cliente update(Cliente cliente);
     void delete(Long id);
 
     Optional<Cliente> findById(Long id);
