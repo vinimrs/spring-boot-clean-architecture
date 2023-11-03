@@ -23,6 +23,7 @@ public class Locadora extends Usuario {
 
   }
 
+
   public String getCnpj() {
     return cnpj;
   }

@@ -1,9 +1,13 @@
 package br.ufscar.dc.dsw.locadora.infrastructure.config.web;
 
 import br.ufscar.dc.dsw.locadora.entity.cliente.gateway.ClienteGateway;
+import br.ufscar.dc.dsw.locadora.entity.locadora.gateway.LocadoraGateway;
 import br.ufscar.dc.dsw.locadora.infrastructure.cliente.gateway.ClienteDatabaseGateway;
 import br.ufscar.dc.dsw.locadora.infrastructure.config.db.repository.ClienteRepository;
+import br.ufscar.dc.dsw.locadora.infrastructure.config.db.repository.LocadoraRepository;
+import br.ufscar.dc.dsw.locadora.infrastructure.locadora.gateway.LocadoraDatabaseGateway;
 import br.ufscar.dc.dsw.locadora.usecase.cliente.*;
+import br.ufscar.dc.dsw.locadora.usecase.locadora.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.LocaleResolver;
@@ -51,5 +55,41 @@ public class MvcConfig {
   public DeleteClienteUseCase deleteClienteUseCase(ClienteRepository clienteRepository) {
     ClienteGateway clienteGateway = new ClienteDatabaseGateway(clienteRepository);
     return new DeleteClienteUseCase(clienteGateway);
+  }
+
+  @Bean
+  public CreateLocadoraUseCase createLocadoraUseCase(LocadoraRepository locadoraRepository) {
+    LocadoraGateway locadoraGateway = new LocadoraDatabaseGateway(locadoraRepository);
+    return new CreateLocadoraUseCase(locadoraGateway);
+  }
+
+  @Bean
+  public GetLocadoraUseCase getLocadoraUseCase(LocadoraRepository locadoraRepository) {
+    LocadoraGateway locadoraGateway = new LocadoraDatabaseGateway(locadoraRepository);
+    return new GetLocadoraUseCase(locadoraGateway);
+  }
+
+  @Bean
+  public SearchLocadoraUseCase searchLocadoraUseCase(LocadoraRepository locadoraRepository) {
+    LocadoraGateway locadoraGateway = new LocadoraDatabaseGateway(locadoraRepository);
+    return new SearchLocadoraUseCase(locadoraGateway);
+  }
+
+  @Bean
+  public UpdateLocadoraUseCase updateLocadoraUseCase(LocadoraRepository locadoraRepository) {
+    LocadoraGateway locadoraGateway = new LocadoraDatabaseGateway(locadoraRepository);
+    return new UpdateLocadoraUseCase(locadoraGateway);
+  }
+
+  @Bean
+  public DeleteLocadoraUseCase deleteLocadoraUseCase(LocadoraRepository locadoraRepository) {
+    LocadoraGateway locadoraGateway = new LocadoraDatabaseGateway(locadoraRepository);
+    return new DeleteLocadoraUseCase(locadoraGateway);
+  }
+
+  @Bean
+  public FindLocadorasByCityUseCase findLocadorasByCityUseCase(LocadoraRepository locadoraRepository) {
+    LocadoraGateway locadoraGateway = new LocadoraDatabaseGateway(locadoraRepository);
+    return new FindLocadorasByCityUseCase(locadoraGateway);
   }
 }

@@ -1,5 +1,6 @@
 package br.ufscar.dc.dsw.locadora.infrastructure.config.db.schema;
 
+import br.ufscar.dc.dsw.locadora.entity.cliente.model.Cliente;
 import br.ufscar.dc.dsw.locadora.entity.locadora.model.Locadora;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -23,19 +24,18 @@ public class LocadoraSchema extends UsuarioSchema {
   @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "rentalCompany")
   private List<LocacaoSchema> locacoes;
 
+  public LocadoraSchema(Locadora locadora) {
+    super(locadora.getId(), locadora.getUsername(), locadora.getName(), locadora.getEmail(), locadora.getPassword());
+    this.cnpj = locadora.getCnpj();
+    this.city = locadora.getCity();
+
+    this.role = "ROLE_LOCADORA";
+  }
+
   public LocadoraSchema() {
     this.role = "ROLE_LOCADORA";
   }
 
-//  public LocadoraSchema(DadosCadastroLocadora dados) {
-//    this.setUsername(dados.username());
-//    this.setPassword(dados.password());
-//    this.setName(dados.name());
-//    this.setEmail(dados.email());
-//    this.cnpj = dados.cnpj();
-//    this.city = dados.city();
-//    this.role = "ROLE_LOCADORA";
-//  }
 
   public String getCnpj() {
     return cnpj;
@@ -57,8 +57,8 @@ public class LocadoraSchema extends UsuarioSchema {
     return locacoes;
   }
 
-    public Locadora toLocadora() {
-    return new Locadora(
+  public Locadora toLocadora() {
+    Locadora locadora = new Locadora(
             this.getUsername(),
             this.getPassword(),
             this.getName(),
@@ -66,31 +66,10 @@ public class LocadoraSchema extends UsuarioSchema {
             this.cnpj,
             this.city
     );
+
+    locadora.setId(this.getId()); // transforma o id do schema (gerado pelo banco de dados em id do cliente
+
+    return locadora;
   }
 
-//  public void atualizar(DadosAtualizacaoLocadora dados) {
-//    if (dados.username() != null && !dados.username().isBlank()) {
-//      this.setUsername(dados.username());
-//    }
-//
-//    if (dados.password() != null && !dados.password().isBlank()) {
-//      this.setPassword(dados.password());
-//    }
-//
-//    if (dados.name() != null && !dados.name().isBlank()) {
-//      this.setName(dados.name());
-//    }
-//
-//    if (dados.email() != null && !dados.email().isBlank()) {
-//      this.setEmail(dados.email());
-//    }
-//
-//    if (dados.cnpj() != null && !dados.cnpj().isBlank()) {
-//      this.cnpj = dados.cnpj();
-//    }
-//
-//    if (dados.city() != null && !dados.city().isBlank()) {
-//      this.city = dados.city();
-//    }
-//  }
 }

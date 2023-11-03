@@ -7,17 +7,18 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LocadoraGateway {
-    void create(Locadora locadora);
-    void update(Locadora locadora);
+    Locadora create(Locadora locadora);
+    Locadora update(Locadora locadora);
     void delete(Long id);
 
     Optional<Locadora> findById(Long id);
-    List<Locadora> searchByName(String nameFragment);
-    List<Locadora> findAllByCnpj(String cnpj);
 
-    Locadora findByCnpj(String cnpj);
+    Optional<Locadora> findByCnpj(String cnpj);
+    Optional<Locadora> findByName(String name);
 
     List<String> findAllCities();
 
     List<Locadora> findAllByCity(String city);
+
+    List<Locadora> findAll();
 }

@@ -1,4 +1,4 @@
-package br.ufscar.dc.dsw.locadora.validation.formats.locadora;
+package br.ufscar.dc.dsw.locadora.infrastructure.locadora.validation.formats;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
