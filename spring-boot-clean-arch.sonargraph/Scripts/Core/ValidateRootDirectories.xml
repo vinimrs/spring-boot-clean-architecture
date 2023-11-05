@@ -1,0 +1,193 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>Script that helps to identify workspace misconfigurations.</description>
+	<source><![CDATA[/**
+* Script that helps to identify workspace misconfigurations.
+* It detects misplaced root directories by computing the base directory of each module
+* and then checking if there are duplicate base directories or any
+* parent-child relationship between base directories.
+*/
+ICoreVisitor v = coreAccess.createVisitor()
+
+def roots = [];
+def moduleToBaseDir = [:];
+
+v.onExternal
+{
+    IExternalAccess external ->
+    return;
+}
+
+v.onModule
+{
+    IModuleAccess module ->
+    
+    //println("Visiting module " + module);
+    v.visitChildren(module);
+    
+    File baseDir = findCommonBaseDirectory(roots);
+    if (baseDir != null)
+    {
+        //println "adding basedir $baseDir for module $module.name"
+        moduleToBaseDir.put(module, baseDir);
+    }
+    else
+    {
+        result.addWarningIssue(module, "Root Directory Misconfiguration", "No common root directory found for module");
+    }
+    roots.clear();
+}
+
+v.onRootDirectory
+{
+    IDirectoryAccess root ->
+    roots.add(root.getFile());
+}
+
+coreAccess.visitParserModel(v)
+
+println("Determined base directories of " + moduleToBaseDir.size() + " modules.");
+
+Map<File, List<IModuleAccess>> baseDirToModules = new HashMap<>();
+for (Map.Entry<IModuleAccess, File> next : moduleToBaseDir.entrySet())
+{
+    File baseDir = next.getValue();
+    List<IModuleAccess> existingModules = baseDirToModules.get(baseDir);
+    if (existingModules == null)
+    {
+        existingModules = [];
+        baseDirToModules.put(baseDir, existingModules)
+    }
+    existingModules.add(next.getKey());
+}
+
+//Check if several modules have the same baseDirectory
+for (Map.Entry<File, List<IModuleAccess>> next : baseDirToModules.entrySet())
+{
+    //println "number of modules of basedir " + next.getKey() + ": " + next.getValue().size()
+    if (next.getValue().size() > 1)
+    {
+        for (IModuleAccess module : next.getValue())
+        {
+            String moduleList = getModuleList(module, next.getValue());
+            result.addWarningIssue(module, "Root Directory Misconfiguration", "Root directory structure conflicts with module(s): " + moduleList);
+        }
+    }
+}
+
+//Check if one baseDirectory is the parent of another baseDirectory
+Map<IModuleAccess, File> copy = new HashMap<>(moduleToBaseDir);
+for (Map.Entry<IModuleAccess, File> next : moduleToBaseDir.entrySet())
+{
+    IModuleAccess current = next.getKey();
+    for (Map.Entry<IModuleAccess, File> other : copy.entrySet())
+    {
+        IModuleAccess otherModule = other.getKey();
+        if (current != otherModule)
+        {
+            if (isParentDirectoryOf(next.getValue(), other.getValue()))
+            {
+                result.addWarningIssue(current, "Root Directory Misconfiguration", "Base directory of module is a parent of module " + otherModule.getName());
+            }
+        }
+    }
+}
+
+
+/**
+ * Find out if a list of files have a common base directory. If yes, return the most specific one.
+ *
+ * @param files Input files
+ * @return null, if no common directory can be found, other the most specific base directory
+ */
+def findCommonBaseDirectory(final List<File> files)
+{
+    assert files != null : "Parameter 'files' of method 'findCommonBaseDirectory' must not be null";
+    
+    List<File> commonBaseDirectories = null;
+    for (File file : files)
+    {
+        file = file.getNormalizedFile();
+        if (commonBaseDirectories == null)
+        {
+            commonBaseDirectories = getBaseDirectoriesOf(file);
+        }
+        else
+        {
+            commonBaseDirectories.retainAll(getBaseDirectoriesOf(file));
+        }
+    }
+    if (commonBaseDirectories == null || commonBaseDirectories.size() == 0)
+    {
+        return null;
+    }
+    return commonBaseDirectories.get(0);
+}
+
+def getBaseDirectoriesOf(final File file)
+{
+    assert file != null : "Parameter 'file' of method 'getBaseDirectoriesOf' must not be null";
+    
+    File parent = file.getParentFile();
+    final List<File> result = [];
+    
+    if (parent == null)
+    {
+        result.add(new File("."));
+    }
+    else
+    {
+        result.add(parent);
+        while ((parent = parent.getParentFile()) != null)
+        {
+            result.add(parent);
+        }
+    }
+    return result;
+}
+
+def getModuleList(IModuleAccess moduleToExclude, List<IModuleAccess> modules)
+{
+    StringBuilder result = new StringBuilder();
+    boolean first = true;
+    for (IModuleAccess next : modules)
+    {
+        if (next != moduleToExclude)
+        {
+            if (!first)
+            {
+                result.append(", ");
+            }
+            
+            result.append(next.getName());
+            first = false;
+        }
+    }
+    return result.toString();
+}
+
+def isParentDirectoryOf(File root, File potentialChild)
+{
+    File current = potentialChild;
+    while(true)
+    {
+        File parent = current.getParentFile();
+        if (parent == null)
+        {
+            return false;
+        }
+        
+        if (parent.equals(root))
+        {
+            return true;
+        }
+        current = parent;
+    }
+    return false;
+}]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

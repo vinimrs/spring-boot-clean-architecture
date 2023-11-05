@@ -1,8 +1,6 @@
 package br.ufscar.dc.dsw.locadora.entity.admin.gateway;
 
-
 import br.ufscar.dc.dsw.locadora.entity.admin.model.Admin;
-import br.ufscar.dc.dsw.locadora.entity.locadora.model.Locadora;
 
 import java.util.List;
 import java.util.Optional;

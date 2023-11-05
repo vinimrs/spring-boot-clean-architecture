@@ -1,0 +1,81 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>Demonstrates how the visitor pattern is used to traverse the model.</description>
+	<source><![CDATA[NodeAccess modulesNode = result.addNode("Modules containing (non-excluded) Namespaces")
+NodeAccess namespacesNode = result.addNode("Internal (non-excluded) Namespaces")
+NodeAccess typesNode = result.addNode("Internal (non-excluded) Types")
+NodeAccess nestedTypesNode = result.addNode("Internal (non-excluded) Nested Types")
+NodeAccess anonymousTypesNode = result.addNode("Internal (non-excluded) Anonymous Types")
+
+//Create visitor
+ICoreVisitor v = coreAccess.createVisitor()
+
+//Visit logical modules
+v.onLogicalModule
+{
+    LogicalModuleAccess logicalModuleAccess ->
+
+    int incoming = logicalModuleAccess.getReferencingElementsRecursively(Aggregator.MODULE_NAMESPACE, true).size()
+    int outgoing = logicalModuleAccess.getReferencedElementsRecursively(Aggregator.MODULE_NAMESPACE, true, true).size()
+   
+    NodeAccess nextNode = result.addNode(modulesNode, logicalModuleAccess.getModule())
+    result.addNode(nextNode, "Used from "+incoming+" and using "+outgoing+" namespaces in other modules");
+    
+     //Don't forget to call visitChildren - we want to visit also the namespaces.
+     v.visitChildren(logicalModuleAccess);
+}
+
+//Visit namespaces
+v.onLogicalModuleNamespace 
+{
+    LogicalNamespaceAccess namespaceAccess ->
+    
+    if(!namespaceAccess.isExcluded() && !namespaceAccess.isExternal())
+    {
+        if(!namespaceAccess.isPart())
+        {
+            //Create the corresponding node
+            result.addNode(namespacesNode, namespaceAccess)
+        }
+        
+        //Don't forget to call visitChildren - we want to visit also child namespaces.
+        v.visitChildren(namespaceAccess)
+    }
+}
+
+//Visit types
+v.onType
+{
+    TypeAccess typeAccess ->
+    
+    if(!typeAccess.isExcluded() && !typeAccess.isExternal())
+    {
+        if(typeAccess.isAnonymous())
+        {
+             //Create the corresponding node
+             result.addNode(anonymousTypesNode, typeAccess)
+        }
+        else if(typeAccess.isNested())
+        {
+             //Create the corresponding node
+             result.addNode(nestedTypesNode, typeAccess)
+        }
+        else
+        {
+             //Create the corresponding node
+             result.addNode(typesNode, typeAccess)
+        }
+         
+        //Don't forget to call visitChildren - we want to visit also nested types, methods and fields.
+        v.visitChildren(typeAccess)
+    }
+}
+
+//Start traversing the model
+coreAccess.visitModel(v)]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

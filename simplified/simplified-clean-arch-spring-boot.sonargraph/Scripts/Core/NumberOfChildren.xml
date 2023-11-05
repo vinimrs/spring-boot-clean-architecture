@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>The number of immediate children (NOC) as defined by Chidamber and Kemerer</description>
+	<source><![CDATA[def metricId = coreAccess.getOrCreateMetricId("NumberOfChildren", "Number of Children",
+    "The number of immediate children (NOC) as defined by Chidamber and Kemerer",
+    false, "OO Metrics")
+ICoreVisitor v = coreAccess.createVisitor()
+v.onType
+{
+    TypeAccess type ->
+    if(type.isExternal() || type.isExcluded())
+    {
+        return
+    }
+    //Add elements so they show up in the elements tab, so we know what has been processed.
+    result.addElement(type)
+    
+    int numberOfChildren = type.getReferencingElements(Aggregator.TYPE, true, false,
+        DependencyKind.EXTENDS, DependencyKind.IMPLEMENTS).size()
+    result.addMetricValue(metricId, type, numberOfChildren)
+    
+    //Continue visiting...
+    v.visitChildren(type)
+}
+coreAccess.visitModel(v)
+]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

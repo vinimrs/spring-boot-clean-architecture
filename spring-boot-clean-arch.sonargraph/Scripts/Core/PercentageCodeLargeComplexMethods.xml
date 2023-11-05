@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>Percentage of statements in large and complex methods. Thresholds are configurable.</description>
+	<source><![CDATA[def v = coreAccess.createVisitor()
+
+def metric = coreAccess.getOrCreateMetricId("LargeComplexMethodPercent",  "Percentage of Statements in Complex Methods",  "Percentage of statements in methods with more than ${parameterStatements} statements and cyclomatic complexity of more than ${parameterComplexity}", true, 0, 10)
+
+def largeMethodCounter = 0
+def totalCounter = 0
+def systemLargeMethodCounter = 0
+def systemTotalCounter = 0
+def counter = 0
+
+v.onMethod()
+{
+    MethodAccess method ->
+       
+    def nos = method.getNumberOfStatementsMetric()
+    def ccn = method.getModifiedCyclomaticComplexityMetric()
+    
+    if (nos > parameterStatements && ccn > parameterComplexity)
+    {
+        largeMethodCounter += nos
+        systemLargeMethodCounter += nos
+    }
+    totalCounter += nos
+    systemTotalCounter += nos
+    counter++
+}
+
+v.onModule()
+{
+    ModuleAccess module ->
+    
+    visitor.visitChildren(module)
+    if (totalCounter > 0)
+    {
+    	def value = 100.0 * ((double) largeMethodCounter / totalCounter)
+        
+    	result.addMetricValue(metric, module, value)
+ 	}
+    largeMethodCounter = 0
+    totalCounter = 0
+}
+
+coreAccess.visitParserModel(v)
+
+def value = 100.0 * ((double) systemLargeMethodCounter / systemTotalCounter)
+
+result.addMetricValue(metric, coreAccess, value)
+
+println "Total methods: ${counter}"
+println "Metric value for system: ${value}"
+]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+		<parameterDefinition name="statements" type="Integer" description="" defaultValue="15" candidates=""></parameterDefinition>
+		<parameterDefinition name="complexity" type="Integer" description="" defaultValue="5" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

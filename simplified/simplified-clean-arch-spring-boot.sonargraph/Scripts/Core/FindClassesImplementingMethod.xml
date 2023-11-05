@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description></description>
+	<source><![CDATA[/**
+* Script to find all implementations of a method.
+*/
+
+//Adjust class and method name! 
+def superClass = "com.hello2morrow.sonargraph.core.model.element.Element"
+def methodName = "getElement()"
+
+def ITypeAccess element = null;
+
+ICoreVisitor v = coreAccess.createVisitor()
+
+v.onType
+{
+    ITypeAccess type ->
+    if(type.isExternal() || type.isExcluded())
+    {
+        return
+    }
+    
+    if (type.typeOf(superClass))
+    {
+        element = type;
+    }
+    v.visitChildren(type)
+}
+
+v.onMethod
+{
+    IMethodAccess method ->
+    if (element != null //
+        && method.isDefinedInEnclosingElement() //
+        && method.getShortNameWithSignature().contains(methodName))
+    {
+        result.addElement(method)
+    }
+}
+
+coreAccess.visitModel(v)]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

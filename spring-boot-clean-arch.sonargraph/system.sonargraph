@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<ns2:softwareSystem xmlns:ns2="http://www.hello2morrow.com/sonargraph/core" id="089b6b4b82e77b7e92c818f74de483dc" version="13.3.0.825">
+	<description></description>
+	<module xmlns:ns4="http://www.hello2morrow.com/sonargraph/languageprovider/java" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns4:xsdJavaModule" name="common" id="949388a1c9f13e2a1e519acc1550d953" language="Java">
+		<description></description>
+		<rootPath name="./common"></rootPath>
+		<rootPath xsi:type="ns4:xsdSourceRootPath" name="./common/src/main/java"></rootPath>
+		<rootPath name="./common/target/classes"></rootPath>
+	</module>
+	<module xmlns:ns4="http://www.hello2morrow.com/sonargraph/languageprovider/java" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns4:xsdJavaModule" name="simplified" id="5573acb19c7a870319514b7d991b6dde" language="Java">
+		<description></description>
+		<rootPath name="./simplified"></rootPath>
+		<rootPath xsi:type="ns4:xsdSourceRootPath" name="./simplified/src/main/java"></rootPath>
+		<rootPath name="./simplified/target/classes"></rootPath>
+	</module>
+</ns2:softwareSystem>

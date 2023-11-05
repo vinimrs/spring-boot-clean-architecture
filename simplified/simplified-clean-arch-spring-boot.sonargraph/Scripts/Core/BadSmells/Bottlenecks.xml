@@ -1,0 +1,109 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>Searches for bottleneck artifacts. I.e., for artifacts that uses many artifacts and is also used by many artifacts.
+The type of artifacts to be searched and the boundaries for bottleneck artifacts can be defined as query parameters.
+</description>
+	<source><![CDATA[ICoreVisitor v = coreAccess.createVisitor()
+
+switch(parameterLevel)
+{
+    case "Class":
+        NodeAccess classNode = result.addNode("Bottleneck Classes")
+        v.onType
+        {
+            TypeAccess type ->
+
+            if(type.isExternal() || type.isExcluded())
+            {
+                 return
+              }
+
+            //Top-level type
+            List refingToTypes = type.getReferencedElementsRecursively(Aggregator.TOPLEVEL_TYPE, true, true)
+            List refedByTypes = type.getReferencingElementsRecursively(Aggregator.TOPLEVEL_TYPE, true)
+
+            final int refingTo = refingToTypes.size()
+            final int refedBy = refedByTypes.size()
+
+            if (refingTo > parameterRefingTo && refedBy > parameterRefedBy)
+            {
+                NodeAccess bottleneckNode = result.addNode(classNode, type)
+                NodeAccess refingToNode = result.addNode(bottleneckNode, "refingTo")
+                refingToTypes.sort{it.name}.each
+                {
+                    result.addNode(refingToNode, it)
+                }
+                NodeAccess refedByNode = result.addNode(bottleneckNode, "refedBy")
+                refedByTypes.sort{it.name}.each
+                {
+                    result.addNode(refedByNode, it)
+                }
+                result.addWarningIssue(type, "Bottleneck", "type has more than ${parameterRefedBy} incoming dependencies and more than ${parameterRefingTo} outgoing dependencies")
+            }
+        }
+        break
+    case "SourceFile":
+        NodeAccess sourceFileNode = result.addNode("Bottleneck Source Files")
+        v.onSourceFile
+        {
+            SourceFileAccess sourceFile ->
+
+            List refedByTypes = sourceFile.getReferencingElementsRecursively(Aggregator.TYPE, true, true)
+            List refingToTypes = sourceFile.getReferencedElementsRecursively(Aggregator.TYPE, true)
+            final int refingTo = refingToTypes.size()
+            final int refedBy = refedByTypes.size()
+            if (refingTo > parameterRefingTo && refedBy > parameterRefedBy)
+            {
+                result.addElement(sourceFile)
+                NodeAccess bottleneckNode = result.addNode(sourceFileNode, sourceFile)
+                NodeAccess refingToNode = result.addNode(bottleneckNode, "refingTo")
+                refingToTypes.sort{it.name}.each
+                {
+                    result.addNode(refingToNode, it)
+                }
+                NodeAccess refedByNode = result.addNode(bottleneckNode, "refedBy")
+                refedByTypes.sort{it.name}.each
+                {
+                    result.addNode(refedByNode, it)
+                }
+                result.addWarningIssue(sourceFile, "Bottleneck", "sourcefile has more than ${parameterRefedBy} incoming dependencies and more than ${parameterRefingTo} outgoing dependencies")
+            }
+        }
+        break
+    case "Namespace":
+        NodeAccess namespaceNode = result.addNode("Bottleneck Namespaces")
+        v.onLogicalSystemNamespace
+        {
+            LogicalNamespaceAccess namespace ->
+
+            if(namespace.isExternal() || namespace.isExcluded())
+            {
+                 return
+            }
+
+            Number refingTo = namespace.getNumberOfOutgoingDependenciesMetric()
+            Number refedBy = namespace.getNumberOfIncomingDependenciesMetric()
+
+            if (refingTo > parameterRefingTo && refedBy > parameterRefedBy)
+            {
+                result.addElement(namespace)
+                NodeAccess bottleneckNode = result.addNode(namespaceNode, namespace)
+                result.addWarningIssue(namespace, "Bottleneck", "namespace has more than ${parameterRefedBy} incoming dependencies and more than ${parameterRefingTo} outgoing dependencies")
+            }
+            visitor.visitChildren(namespace);
+        }
+
+        break
+}
+
+//Traverse the model
+coreAccess.visitModel(v)]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+		<parameterDefinition name="refingTo" type="Integer" description="Minimum number of outgoing dependencies" defaultValue="20" candidates=""></parameterDefinition>
+		<parameterDefinition name="refedBy" type="Integer" description="Minimum number of incoming dependencies" defaultValue="20" candidates=""></parameterDefinition>
+		<parameterDefinition name="level" type="String" description="Artifact Level" defaultValue="Class" candidates="Class SourceFile Namespace"></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

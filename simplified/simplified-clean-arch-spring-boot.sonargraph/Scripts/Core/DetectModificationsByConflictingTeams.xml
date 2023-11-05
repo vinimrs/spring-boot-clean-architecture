@@ -1,0 +1,99 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>Check if there are modifications done by conflicting teams. Reporting level is module, but source file level can be easily enabled, too. </description>
+	<source><![CDATA[//Script to check if there are modifications done by conflicting teams. Reporting level is module, but can also be enabled for source file level.
+
+//Team definition. For developer names, check the output at the end of the script!
+//Aliases can be defined in the system configuration via menu "System" -> "Configure..." -> "Developer Management"
+Map<String, Set<String>> teams = [:];
+teams.put("Team A", ["Ingmar Kellner", "Andreas Hoyer"]);
+teams.put("Team B", ["Dietmar Menges", "Alexander von Zitzewitz"]);
+
+//Define the analysis period. Available are _30_DAYS, _90_DAYS, _365_DAYS
+IScmPeriod period = ScmPeriod._365_DAYS;
+
+Set<String> authorsOfSystem = [];
+Set<String> authorsOfModule = [];
+
+//Structuring the result. Visible in the "Tree" tab below the Script editor.
+NodeAccess conflicts = result.addNode("Conflicting Team Access");
+NodeAccess noConflicts = result.addNode("No Conflicts");
+NodeAccess noModifications = result.addNode("No Modifications");
+
+def checkForConflictingTeams(Map<String, Set<String>> teams, Set<String> detectedAuthors, ResultAccess result, ElementAccess element)
+{
+    Set<String> conflictingTeams = [];
+    for (String nextAuthor : detectedAuthors)
+    {
+        for (Map.Entry<String, Set<String>> nextTeam : teams.entrySet())
+        {
+            if (nextTeam.getValue().contains(nextAuthor))
+            {
+                conflictingTeams.add(nextTeam.getKey());
+            }
+        }
+    }
+    
+    if (conflictingTeams.size() > 1)
+    {
+        //println "Authors $detectedAuthors of teams $conflictingTeams modified $element"
+        result.addWarningIssue(element, "Modifications by conflicting teams", "Modifications by $detectedAuthors of teams $conflictingTeams");
+        return true;
+    }
+    
+    return false;
+}
+
+ICoreVisitor v = coreAccess.createVisitor();
+v.onModule
+{
+    IModuleAccess module ->
+    
+    authorsOfModule.clear();
+    
+    v.visitChildren(module);
+    
+    if (authorsOfModule.isEmpty())
+    {
+        //println "Ummodified module: $module"
+        result.addNode(noModifications, module);
+    }
+    else if (checkForConflictingTeams(teams, authorsOfModule, result, module))
+    {
+        //println "Module with conflicting team access $module: $authorsOfModule, authors: $authorsOfModule";
+        result.addNode(conflicts, module);
+    }
+    else
+    {
+        //println "Module without conflict: $module, authors: $authorsOfModule";
+        result.addNode(noConflicts, module);
+    }
+    
+    authorsOfSystem.addAll(authorsOfModule);
+}
+
+v.onSourceFile
+{
+    ISourceFileAccess source ->
+    if(source.isExternal() || source.isExcluded())
+    {
+        return;
+    }
+    
+    Set<String> authorsOfSource = source.getAuthors(period);
+    authorsOfModule.addAll(authorsOfSource);
+    
+    //Uncomment if the check should be done on source file level, too.
+    //checkForConflictingTeams(teams, authorsOfSource, result, source);    
+}
+
+coreAccess.visitModel(v);
+
+println "\n\nAuthors contributing to source files within the analysis period: $authorsOfSystem";
+]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

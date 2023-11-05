@@ -1,0 +1,72 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>Identifies methods that seem to be closer related to another class than the class they belong to. I.e., they use more getter methods of another class than methods and attributes of the own class and are, therefore, candidates to be moved there.
+Identified methods use more than "Minimal Difference" (script parameter) more different getter methods of another classes than the number of different attributes and methods they access of their own class.
+</description>
+	<source><![CDATA[NodeAccess rootNode = result.addNode("Feature Envy")
+
+// define visitor
+ICoreVisitor v = coreAccess.createVisitor()
+
+v.onMethod
+{
+    MethodAccess method ->
+
+    if (method.getParent().isExternal() || method.getParent().isExcluded())
+    {
+        return;
+    }
+
+    List dependenciesToMethodsOfSameClass = method.getOutgoingDependencies(Aggregator.METHOD, true, DependencyKind.CALL)
+        .findAll{it.to.parent == method.parent}
+    List dependenciesToFieldsOfSameClass = method.getOutgoingDependencies(Aggregator.FIELD, true, DependencyKind.READ, DependencyKind.WRITE)
+        .findAll{it.to.parent == method.parent}
+
+    Map outgoingDependenciesToGetterOfOtherClasses = method.getOutgoingDependencies(Aggregator.METHOD, true, DependencyKind.CALL)
+        .findAll{it.to.getShortName().startsWith("get") || it.to.getShortName().startsWith("is")}
+        .findAll{it.to.parent != method.parent}
+        .groupBy{it.to.parent}
+
+    outgoingDependenciesToGetterOfOtherClasses.each
+    {
+        ElementAccess clazz, List dependenciesPerClass ->
+
+        if (clazz.isExcluded()  || clazz.isExternal())
+        {
+            return
+        }
+
+        if ((dependenciesPerClass.size() - dependenciesToMethodsOfSameClass.size() - dependenciesToFieldsOfSameClass.size()) > parameterDifference)
+        {
+            result.addElement(method)
+            NodeAccess methodNode = result.addNode(rootNode, method)
+            NodeAccess clazzNode = result.addNode(methodNode, clazz)
+            dependenciesPerClass.each
+            {
+                result.addNode(clazzNode, it)
+            }
+            NodeAccess internalDependencies = result.addNode(methodNode, "internal dependencies")
+            dependenciesToFieldsOfSameClass.each
+            {
+                result.addNode(internalDependencies, it)
+            }
+            dependenciesToMethodsOfSameClass.each
+            {
+                result.addNode(internalDependencies, it)
+            }
+
+            result.addWarningIssue(method, "Feature Envy", "consider moving method to type '${clazzNode.node.element.name}'")
+        }
+    }
+}
+
+// traverse the model
+coreAccess.visitModel(v)
+]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+		<parameterDefinition name="difference" type="Integer" description="Minimal Difference" defaultValue="3" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

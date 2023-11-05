@@ -1,0 +1,187 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>Computes the values and ratios of production, generated and test code per module and the overall system. Can be used as a template for further discriminations.</description>
+	<source><![CDATA[/**
+ * This script discriminates the code base into production, test and generated code.
+ * The discrimination is based on pattern matching of source root directories.
+ * The patterns are defined as script parameters. Edit the script file's configuration to modify them.
+ *
+ * The discrimination is done per module and for the overall system and provided in absolute numbers (LOC)
+ * and ratio with respect to the overall size.
+ */
+
+println "Pattern used to identify root directories containing test code: $parameterTestCodePattern"
+def testCodePattern = ~parameterTestCodePattern
+
+println "Pattern used to identify root directories containing generated code: $parameterGeneratedCodePattern"
+def generatedCodePattern = ~parameterGeneratedCodePattern
+
+//Metrics for code distribution. Absolute and relative values of LOC (without comments and blanks)
+def procLocMetric = coreAccess.getOrCreateMetricId("ProdLoc", "LOC of Production Code",
+    "Lines of code (without comments and blanks) of production code",
+    false, "Size")
+def procLocRatioMetric = coreAccess.getOrCreateMetricId("ProdLocRatio", "Ratio of Production Code (LOC)",
+    "Ratio of production code (LOC, i.e. without comments and blanks)",
+    true, "Size")
+def testLocMetric = coreAccess.getOrCreateMetricId("TestLoc", "LOC of Test Code",
+    "Lines of code (without comments and blanks) of test code",
+    false, "Size")
+def testLocRatioMetric = coreAccess.getOrCreateMetricId("TestLocRatio", "Ratio of Test Code (LOC)",
+    "Ratio of test code (LOC, i.e. without comments and blanks)",
+    true, "Size")
+def generatedLocMetric = coreAccess.getOrCreateMetricId("GeneratedLoc", "LOC of Generated Code",
+    "Lines of code (without comments and blanks) of generated code",
+    false, "Size")
+def generatedLocRatioMetric = coreAccess.getOrCreateMetricId("GeneratedLocRatio", "Ratio of Generated Code (LOC)",
+    "Ratio of generated code (LOC, i.e. without comments and blanks)",
+    true, "Size")
+
+
+def currentModule = null
+
+def isTest = false
+def isGenerated = false
+def isProduction = false
+
+int totalLoc = 0
+int totalProdLoc = 0
+int totalTestLoc = 0
+int totalGeneratedLoc = 0
+
+//Helper class
+class ModuleContainer
+{
+    final String name
+    int prodLoc = 0
+    int testLoc = 0
+    int generatedLoc = 0
+    
+    double prodLocRatio = 0.0
+    double testLocRatio = 0.0
+    double generatedLocRatio = 0.0
+    
+    def ModuleContainer(String name)
+    {
+        this.name = name
+    }
+    
+    String toString()
+    {
+        return "LOC summary for Module '$name': (Production | Test | Generated): $prodLoc | $testLoc | $generatedLoc    (" + asPercent(prodLocRatio) +
+        " | " + asPercent(testLocRatio) + " | " + asPercent(generatedLocRatio) + ")"
+    }
+    
+    def done()
+    {
+        int total = prodLoc + testLoc + generatedLoc
+        prodLocRatio = (double) prodLoc / total
+        testLocRatio = (double) testLoc / total
+        generatedLocRatio = (double) generatedLoc / total
+    }
+    
+    def asPercent(double value)
+    {
+        return sprintf("%.0f%%", value * 100)
+    }
+}
+
+
+ICoreVisitor v = coreAccess.createVisitor()
+v.onModule
+{
+    IModuleAccess module ->
+    
+    currentModule = new ModuleContainer(module.name)
+    
+    v.visitChildren(module)
+    
+    currentModule.done()
+    
+    result.addMetricValue(procLocMetric, module, currentModule.prodLoc)
+    result.addMetricValue(procLocRatioMetric, module, currentModule.prodLocRatio)
+    
+    result.addMetricValue(testLocMetric, module, currentModule.testLoc)
+    result.addMetricValue(testLocRatioMetric, module, currentModule.testLocRatio)
+    
+    result.addMetricValue(generatedLocMetric, module, currentModule.generatedLoc)
+    result.addMetricValue(generatedLocRatioMetric, module, currentModule.generatedLocRatio)
+    
+    println "$currentModule"
+}
+
+v.onRootDirectory
+{
+    IDirectoryAccess directory ->
+    
+    isTest = testCodePattern.matcher(directory.name).matches()
+    if (isTest)
+    {
+        isGenerated = false
+        isProduction = false
+    }
+    else
+    {
+        isGenerated = generatedCodePattern.matcher(directory.name).matches()
+        isProduction = !isGenerated
+    }
+    
+    v.visitChildren(directory)
+}
+
+v.onSourceFile
+{
+    ISourceFileAccess source ->
+    if (source.external)
+    {
+        return
+    }
+    
+    def loc = source.getLinesOfCodeMetric() //note that this excludes comments and blank lines.
+    totalLoc += loc
+    
+    if (isTest)
+    {
+        currentModule.testLoc += loc
+        totalTestLoc += loc
+    }
+    else if (isGenerated)
+    {
+        currentModule.generatedLoc += loc
+        totalGeneratedLoc += loc
+    }
+    else
+    {
+        currentModule.prodLoc += loc
+        totalProdLoc += loc
+    }
+}
+
+//Traverse the model
+coreAccess.visitModel(v)
+
+println "Total LOC: $totalLoc"
+
+def productionCodeRatio = (double) totalProdLoc / totalLoc
+println "Total LOC (production): $totalProdLoc " + sprintf("(%.0f%%)", productionCodeRatio * 100)
+
+def testCodeRatio = (double) totalTestLoc / totalLoc
+println "Total LOC (test): $totalTestLoc " + sprintf("(%.0f%%)", testCodeRatio * 100)
+
+def generatedCodeRatio = (double) totalGeneratedLoc / totalLoc
+println "Total LOC (generated): $totalGeneratedLoc " + sprintf("(%.0f%%)", generatedCodeRatio * 100)
+
+result.addMetricValue(procLocMetric, coreAccess, totalProdLoc)
+result.addMetricValue(procLocRatioMetric, coreAccess, productionCodeRatio)
+result.addMetricValue(testLocMetric, coreAccess, totalTestLoc)
+result.addMetricValue(testLocRatioMetric, coreAccess, testCodeRatio)
+result.addMetricValue(generatedLocMetric, coreAccess, totalGeneratedLoc)
+result.addMetricValue(generatedLocRatioMetric, coreAccess, generatedCodeRatio)
+]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+		<parameterDefinition name="testCodePattern" type="String" description="Source root directories are matched against this regular expression." defaultValue=".*/.*test.*" candidates=""></parameterDefinition>
+		<parameterDefinition name="generatedCodePattern" type="String" description="Source root directories are matched against this regular expression." defaultValue=".*/.*generated.*" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

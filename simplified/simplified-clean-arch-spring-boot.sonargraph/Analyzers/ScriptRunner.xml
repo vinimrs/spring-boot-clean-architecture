@@ -1,0 +1,4 @@
+<?xml version="1.0" ?>
+<analyzerConfiguration version="13.3.0.825" analyzer="ScriptRunner">
+	<stringEntry value="Default" name="0:./Core/SuperTypeUsesSubType.xml"></stringEntry>
+</analyzerConfiguration>

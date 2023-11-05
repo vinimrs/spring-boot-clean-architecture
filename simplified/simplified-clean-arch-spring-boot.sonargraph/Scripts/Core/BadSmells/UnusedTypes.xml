@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>Detect types with no incoming dependencies.</description>
+	<source><![CDATA[//Create nodes for the "tree tab"
+NodeAccess unusedTypeNode = result.addNode("Internal types not being used")
+
+ICoreVisitor v = coreAccess.createVisitor()
+
+v.onType
+{
+    TypeAccess type ->
+    if(type.isExternal() || type.isExcluded())
+    {
+    	return;
+	}
+
+    //Add elements so they show up in the elements tab, so we know what has been processed.
+    result.addElement(type)
+
+    List usingTypes = type.getReferencingElementsRecursively(Aggregator.TYPE, true)
+
+    int numberOfIncomingDependencies = usingTypes.size()
+    if(numberOfIncomingDependencies > 0)
+    {
+        return;
+    }
+
+    //Add child node for the detected type
+     result.addNode(unusedTypeNode, type)
+
+    //Create warning type issue
+    result.addWarningIssue(type, "No incoming dependencies", "Type has no incoming dependencies")
+}
+
+//Traverse the model
+coreAccess.visitModel(v)
+
+]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>In cases involving multiple inheritance, the depth of inheritance tree (DIT) will be the maximum length from the node to the root of the tree. DIT is a measure of how many ancestor classes can potentially affect this class. (See "A metrics suite for object oriented design" by Chidamber and Kemerer)</description>
+	<source><![CDATA[def metricId = coreAccess.getOrCreateMetricId("DepthOfInheritance", "Depth of Inheritance",
+    "The depth of the inheritance tree as defined by Chidamber and Kemerer, i.e. the maximum length of the current type to the root of the inheritance tree.",
+    false, "OO Metrics");
+
+/** 
+	Determines the depth by recursively going up the hierarchy.
+	Includes and stops at the first external type.    
+*/
+def getDepthOfHierarchy(TypeAccess type, int level)
+{
+    if (type.external)
+    {
+        return level
+    }
+    
+    int deepest = level
+    List<TypeAccess> superTypes = type.getReferencedElements(Aggregator.TYPE, true, DependencyKind.EXTENDS, DependencyKind.IMPLEMENTS)
+    for (TypeAccess superType : superTypes)
+    {
+        //println "   Level $level extends/implements $superType"        
+        int superTypeDepth = getDepthOfHierarchy(superType, level + 1)
+        if (superTypeDepth > deepest)
+        {
+            deepest = superTypeDepth
+        }
+    }
+    return deepest
+}
+
+ICoreVisitor v = coreAccess.createVisitor()
+v.onType
+{
+    TypeAccess type ->
+    if(type.external || type.excluded)
+    {
+        return
+    }
+    //Add elements so they show up in the elements tab, so we know what has been processed.   
+    result.addElement(type)
+    
+    int depthOfInheritanceTree = getDepthOfHierarchy(type, 0)
+    result.addMetricValue(metricId, type, depthOfInheritanceTree)
+    
+    v.visitChildren(type)
+}
+coreAccess.visitModel(v)
+]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

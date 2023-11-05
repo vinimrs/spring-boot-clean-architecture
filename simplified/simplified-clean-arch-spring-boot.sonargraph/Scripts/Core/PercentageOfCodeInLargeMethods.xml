@@ -1,0 +1,60 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>Calculates percentage of code in methods with more than 15 statements</description>
+	<source><![CDATA[def v = coreAccess.createVisitor()
+def metric = coreAccess.getOrCreateMetricId("LargeMethodCodePercent",  "Percentage of Statements in Large Methods",  "Percentage of statements in methods with more than ${parameterTopNumStatements} statements", true, 0, 10)
+
+def largeMethodCounter = 0
+def totalCounter = 0
+def systemLargeMethodCounter = 0
+def systemTotalCounter = 0
+def counter = 0
+
+v.onMethod()
+{
+    MethodAccess method ->
+       
+    def nos = method.getNumberOfStatementsMetric()
+    
+    if (nos > parameterTopNumStatements)
+    {
+        largeMethodCounter += nos
+        systemLargeMethodCounter += nos
+    }
+    totalCounter += nos
+    systemTotalCounter += nos
+    counter++
+}
+
+v.onModule()
+{
+    ModuleAccess module ->
+    
+    visitor.visitChildren(module)
+    if (totalCounter > 0)
+    {
+    	def value = 100.0 * ((double) largeMethodCounter / totalCounter)
+        
+    	result.addMetricValue(metric, module, value)
+ 	}
+    largeMethodCounter = 0
+    totalCounter = 0
+}
+
+
+coreAccess.visitParserModel(v)
+
+def value = 100.0 * ((double) systemLargeMethodCounter / systemTotalCounter)
+
+result.addMetricValue(metric, coreAccess, value)
+
+println "Total methods: ${counter}"
+println "Metric value for system: ${value}"
+]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+		<parameterDefinition name="topNumStatements" type="Integer" description="" defaultValue="15" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

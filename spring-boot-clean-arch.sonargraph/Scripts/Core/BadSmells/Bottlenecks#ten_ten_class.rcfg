@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<runConfiguration version="13.3.0.825" description="">
+	<parameterValue name="refingTo">10</parameterValue>
+	<parameterValue name="refedBy">10</parameterValue>
+	<parameterValue name="level">Class</parameterValue>
+</runConfiguration>

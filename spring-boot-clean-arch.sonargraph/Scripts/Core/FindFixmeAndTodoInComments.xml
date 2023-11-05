@@ -1,0 +1,75 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>Detects FIXME and TODO in comments.</description>
+	<source><![CDATA[def fixmePattern = ~/\/\/\s?FIXME.?\b(.*)/;
+def todoPattern = ~/\/\/\s?TODO.?\b/;
+
+MetricIdAccess fixmeMetric = coreAccess.getOrCreateMetricId("Number of FIXMEs","Number of FIXMEs", "Number of FIXME literals found", false);
+MetricIdAccess todoMetric = coreAccess.getOrCreateMetricId("Number of TODOs","Number of TODOs", "Number of TODO literals found", false);
+
+ICoreVisitor visitor = coreAccess.createVisitor()
+
+visitor.onExternal
+{ //We are not interested in external
+    return;
+}
+
+def extractText(java.util.regex.Matcher matcher)
+{
+    if (matcher[0].size() == 2)
+    {
+        return matcher[0][1];
+    }
+    return "";
+}
+
+
+visitor.onSourceFile
+{
+    ISourceFileAccess source ->
+    if(source.isExcluded())
+    {
+        return;
+    }
+    
+    List<ISourceLineAccess> lines = source.getSourceLines();
+    if(lines != null)
+    {
+        int numberOfFixmes = 0;
+        int numberOfTodos = 0;
+        
+        for(ISourceLineAccess nextLine : lines)
+        {
+            def fixmeMatcher = (nextLine.getText() =~ fixmePattern);
+            if(fixmeMatcher.count > 0)
+            {
+                numberOfFixmes += fixmeMatcher.count;
+                def text = extractText(fixmeMatcher);
+                result.addWarningIssue(source, "FIXME", text, nextLine);
+            }
+            def todoMatcher = (nextLine.getText() =~ todoPattern);
+            if(todoMatcher.count > 0)
+            {
+                numberOfTodos += todoMatcher.count;
+            }
+        }
+        
+        if(numberOfFixmes > 0)
+        {
+            result.addMetricValue(fixmeMetric, source, numberOfFixmes)
+        }
+        if(numberOfTodos > 0)
+        {
+            result.addMetricValue(todoMetric, source, numberOfTodos)
+        }
+    }
+}
+
+coreAccess.visitParserModel(visitor)
+]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="30" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

@@ -1,15 +1,7 @@
 package br.ufscar.dc.dsw.locadora.infrastructure.config.db.schema;
 
 import br.ufscar.dc.dsw.locadora.entity.admin.model.Admin;
-import br.ufscar.dc.dsw.locadora.entity.cliente.model.Cliente;
-import br.ufscar.dc.dsw.locadora.entity.cliente.model.Sexo;
-import br.ufscar.dc.dsw.locadora.infrastructure.cliente.validation.formats.CPF;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(name = "Admin")

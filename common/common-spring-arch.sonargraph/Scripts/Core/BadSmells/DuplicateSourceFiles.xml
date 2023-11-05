@@ -1,0 +1,91 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>Identifies source files that have been linked into more than one module</description>
+	<source><![CDATA[/**
+ * This script identifies source files that are used in more than a single module, i.e. that are also linked into other modules.
+ * We see this as a code smell, as it breaks the encapsulation of the modules and their defined module-dependencies:
+ * It is not enough to know that module A depends on module B in order to reason about an impact that a modification has, 
+ * but the developer needs to know all the source file dependencies as well.
+ * Also, a lot of module systems (Maven, Visual Studio projects, OSGi modules, etc.) don't allow cyclic dependencies between modules and 
+ * the file links that this script detects are one hack to circumvent this meaningful restriction. 
+ */
+
+//Simple data structure to keep track of the source-to-module relationship.
+class Pair
+{
+    ISourceFileAccess source
+    IModuleAccess module
+    
+    Pair(source, module)
+    {
+        this.source = source
+        this.module = module
+    }
+}
+
+def allSourceFiles = [:]
+def duplicateFileToModules = [:]
+
+ICoreVisitor v = coreAccess.createVisitor()
+def currentModule = null
+
+v.onModule
+{
+    IModuleAccess module ->
+    currentModule = module
+    v.visitChildren(module)
+}
+
+v.onSourceFile
+{
+    ISourceFileAccess source ->
+    //source.path is the absolute path of a source file and does not depend on 
+    //the source location within a module
+    def path = source.path
+    if (allSourceFiles.containsKey(path))
+    {
+        sourceToModules = duplicateFileToModules.get(path)
+        if (sourceToModules == null)
+        {
+            //Create a new list for the duplicate source...
+            sourceToModules = []
+            //...and add the previous found entry to it.
+            sourceToModules << allSourceFiles.get(path)
+            //Add the list to the global map.
+            duplicateFileToModules.put(path, sourceToModules)
+        }
+        
+        //Add the current source to the list of duplicates
+        sourceToModules << new Pair(source, currentModule)
+    }
+    else
+    {
+        allSourceFiles.put(path, new Pair(source, currentModule))
+    }
+}
+
+//Traverse the model
+coreAccess.visitModel(v)
+
+//Iterate over the map of path to list of duplicates and add an issue to each involved source.
+for (Map.Entry<String, List<Pair<ISourceFileAccess, IModuleAccess>>> entry : duplicateFileToModules.entrySet())
+{
+    for (Pair<ISourceFileAccess, IModuleAccess> next : entry.value)
+    {
+        StringBuilder msg = new StringBuilder("Source is also contained in module ")
+        msg.append(entry.value.findAll
+            { it != next
+            }.collect
+            { e -> e.module
+            }.join(", "))
+        //println "Issue text: $msg"
+        result.addWarningIssue(next.source, "Duplicate Source File", msg.toString())
+    }
+}
+]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

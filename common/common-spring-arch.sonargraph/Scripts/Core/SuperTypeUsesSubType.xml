@@ -1,0 +1,76 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>Detect cyclic dependencies in inheritance.</description>
+	<source><![CDATA[int warnings = 0
+
+ICoreVisitor v = coreAccess.createVisitor()
+
+def void getSubTypes(TypeAccess type, Set<TypeAccess> subTypes)
+{
+    type.getReferencingElements(Aggregator.TYPE, false, DependencyKind.EXTENDS, DependencyKind.IMPLEMENTS).each()
+    {
+        TypeAccess subType ->
+        
+        if (subTypes.contains(subType))
+        {
+            // Already visited
+            return
+        }
+        subTypes.add(subType)
+        getSubTypes(subType, subTypes)
+    }
+}
+
+v.onType()
+{
+    TypeAccess type ->
+    
+    if(type.isExternal() || type.isExcluded())
+    {
+        return
+    }
+    
+    Set<TypeAccess> subTypes = new HashSet<>()
+    
+    getSubTypes(type, subTypes)
+    
+    if (subTypes.isEmpty())
+    {
+        return
+    }
+    
+    SourceFileAccess sourceFile = type.getSourceFile();
+    
+    def outDeps = type.getOutgoingDependenciesRecursively(Aggregator.TYPE, true)
+    
+    for (AggregatedDependencyAccess dep : outDeps)
+    {
+        TypeAccess toType = (TypeAccess) dep.getTo()
+        
+        if (toType.isExternal() || toType.getSourceFile().equals(sourceFile) || !dep.includeInCycleAnalysis())
+        {
+            continue;
+        }
+        if (subTypes.contains(toType))
+        {
+            if (result.addWarningIssue(dep, "Supertype uses subtype", "Reference to subtype ${toType.getShortName()}"))
+            {
+                warnings += dep.getNumberOfDependencies()
+            }
+        }
+    }
+    
+}
+
+coreAccess.visitParserModel(v);
+println "Found ${warnings} warnings"
+MetricIdAccess id = coreAccess.getOrCreateMetricId("SupertypeUsesSubtype","Supertype uses subtype", "A super type must not know its subtypes", false, 0, 0);
+result.addMetricValue(id, coreAccess, warnings)
+
+]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

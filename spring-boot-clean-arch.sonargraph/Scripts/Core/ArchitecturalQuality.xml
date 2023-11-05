@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description></description>
+	<source><![CDATA[def v = coreAccess.createVisitor()
+def metric = coreAccess.getOrCreateMetricId("ArchitecturalQuality", "Architectural Quality", "Architectural quality between 0% (no model) and 100% (full compliance)", true, 90, 100, 100, 0)
+
+int components = coreAccess.getNumberOfComponentsMetric()
+def violationPart = 50.0 * (components - coreAccess.getNumberOfViolatingComponentsMetric()) / components
+def assignedPart = 30.0 * (components - coreAccess.getNumberOfUnassignedComponentsMetric() - coreAccess.getNumberOfComponentsInDeprecatedArtifactsMetric()) / components
+int artifacts = coreAccess.getNumberOfArtifactsMetric()
+int empty = coreAccess.getNumberOfEmptyArtifactsMetric()
+int nonEmptyArtifacts = artifacts - empty
+
+// To measure architectural quality we need to have at least 3 non-empty artifacts
+
+v.onModule()
+{
+    ModuleAccess module ->
+    
+    int moduleComponents = module.getNumberOfComponentsMetric()
+    int unassigned = module.getNumberOfUnassignedComponentsMetric()
+    
+    // For the module metric we calculate the percentage of components without violations
+    // and weight this number with 70%
+    def moduleViolationPart = 70.0 * (moduleComponents - module.getNumberOfViolatingComponentsMetric()) / moduleComponents
+    
+    if (unassigned == moduleComponents || nonEmptyArtifacts < 3)
+    {
+        // If everything is unassigned or we have less than 3 non-empty artifacts the metric makes no sense and will be zero
+        moduleViolationPart = 0.0
+    }
+    
+    // As a second component to the metric we measure the percentage of assigned components
+    // and weigh this number with 30%
+    def moduleAssignedPart = 30.0 * (moduleComponents - unassigned) / moduleComponents
+    
+    result.addMetricValue(metric, module, moduleViolationPart + moduleAssignedPart)
+}
+
+
+coreAccess.visitParserModel(v)
+
+
+if (nonEmptyArtifacts < 3)
+{
+    violationPart = 0.0
+}
+
+// For the global metric we weight violations with 50%, unassigned components with 30%.
+// The last part calculated the percentage of artifacts actually having components assigned.
+// This part is weighed with 20%.
+def emptyPart = 20.0 * (artifacts - empty) / artifacts
+
+result.addMetricValue(metric, coreAccess, violationPart + assignedPart + emptyPart)
+
+]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

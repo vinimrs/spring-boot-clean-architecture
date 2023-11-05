@@ -1,0 +1,76 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>Identifies disjunct groups of source files. Can be used to detect groups of unused source files.</description>
+	<source><![CDATA[groupMap = [:]
+sets = []
+
+ICoreVisitor v = coreAccess.createVisitor()
+v.onSourceFile
+{
+    ISourceFileAccess sourceFile ->
+    
+    if (!sourceFile.isExternal() && !sourceFile.isExcluded() && groupMap[sourceFile] == null)
+    {
+        //println sourceFile.name
+        
+        group = new HashSet<SourceFileAccess>()
+        group.add(sourceFile)
+        sets.add(group)
+        groupMap[sourceFile] = group
+        
+        getInAndOutgoingDeps(sourceFile, group)
+    }
+}
+
+coreAccess.visitParserModel(v)
+
+def i = 1;
+sets.each()
+{
+    set ->
+    
+    NodeAccess node = result.addNode("Group $i")
+    i++
+    
+    set.each()
+    {
+        SourceFileAccess sf ->
+        
+        result.addNode(node, sf)
+    }
+}
+
+def getInAndOutgoingDeps(SourceFileAccess s, Set<SourceFileAccess> deps)
+{
+    toBeHandled = []
+    s.getReferencedElementsRecursively(Aggregator.SOURCE_FILE, true, true).each()
+    {
+        SourceFileAccess ref ->
+        
+        if (deps.add(ref))
+        {
+            groupMap[ref] = deps
+            toBeHandled.add(ref)
+        }
+    }
+    s.getReferencingElementsRecursively(Aggregator.SOURCE_FILE, true, true).each()
+    {
+        SourceFileAccess ref ->
+        
+        if (deps.add(ref))
+        {
+            groupMap[ref] = deps
+            toBeHandled.add(ref)
+        }
+    }
+    toBeHandled.each()
+    {
+        sf -> getInAndOutgoingDeps(sf, deps)
+    }
+}]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<treeMap version="13.3.0.825" leafElement="physicalSourceFile" redThreshold="20">
+	<description>Highlights files with high number of changes (90 days) and high average complexity.</description>
+	<sizeSource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsdMetric" provider="Core" id="LinesOfCode"></sizeSource>
+	<colorSource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsdMetric" provider="Core" id="Changes90"></colorSource>
+	<heightSource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsdMetric" provider="Core" id="AverageComplexity"></heightSource>
+</treeMap>

@@ -1,0 +1,80 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>Find packages that occur in more than one module</description>
+	<source><![CDATA[// Find all packages that occur in more than one module
+ICoreVisitor v = coreAccess.createVisitor()
+
+def namespaceMap = [:]
+def distributedPackages = [:]
+
+v.onLogicalModuleNamespace
+{
+    LogicalNamespaceAccess ns ->
+    
+    // A 'part' namespace does not contain classes
+    if (!ns.isPart())
+    {
+        def name = ns.name
+        def entry = namespaceMap[name]
+        
+        if (entry == null)
+        {
+            // seeing thise namepsace name ofr the first time
+            entry = [ ns ]
+            namespaceMap[name] = entry
+        }
+        else
+        {
+            // append namespace to list
+            entry << ns
+            // use map as a set
+            distributedPackages[name] = 1
+        }
+        
+    }
+    // very important, since namespaces can be nested
+    v.visitChildren(ns)
+}
+
+v.onLogicalExternal
+{
+    // skip externals
+}
+
+// Traverse the model and build a datamodel to be used below
+coreAccess.visitLogicalModuleNamespaces(v)
+
+// Now do the work and create issues and a result tree
+distributedPackages.keySet().each
+{
+    // 'it' represents the name of a global package
+    distributedNamespaces = namespaceMap[it]
+    // distributedNamespaces is a list of LogicalNamespaceAccessobjects
+    moduleNames = distributedNamespaces.collect
+    {
+        it.moduleScope.name
+    }
+    msg = "Namespace occurs in more than one module: $moduleNames"
+    // Under each name node add the modules where this package name occurs
+    node = result.addNode(it)
+    distributedNamespaces.each
+    {
+        // Add an issue to the logical namespace
+        result.addWarningIssue(it, "Distributed Package", msg)
+        // dd the module as a child ode in the result tree
+        result.addNode(node, it.moduleScope)
+    }
+}
+
+// Now define a metric where every value above zero will create a warning
+def metricId = coreAccess.getOrCreateMetricId("DistributedPackageNames", "Number of distributed package names", "Number of package names that occur in more than one module", false, 0, 0)
+
+// Add the metric value to the result
+result.addMetricValue(metricId, coreAccess, distributedPackages.size())
+]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

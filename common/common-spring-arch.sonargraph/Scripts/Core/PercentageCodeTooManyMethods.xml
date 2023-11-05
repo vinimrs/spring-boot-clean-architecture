@@ -1,0 +1,64 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>Percentage of statements in classes with many methods.</description>
+	<source><![CDATA[ICoreVisitor v = coreAccess.createVisitor()
+
+def metricId = coreAccess.getOrCreateMetricId("PercentageCodeTooManyMethods", "Percentage of Statements in Classes with Many Methods", "Percentage of statements in classes with more than ${parameterTopNumMethods} methods", true)
+def largeClassesNos = 0
+def moduleNos = 0
+
+def systemLargeClassesNos = 0
+def systemNos =0
+
+
+v.onType
+{
+    TypeAccess type ->
+    
+    def nom = type.getMethods().size()
+    def nos = type.getNumberOfStatementsMetric()
+    
+    if(nom != null && nos != null)
+    {
+        if (nom > parameterTopNumMethods)
+        {
+            largeClassesNos += nos
+            systemLargeClassesNos += nos
+        }
+        systemNos += nos
+        moduleNos += nos
+    }
+}
+
+v.onModule
+{
+    ModuleAccess module ->
+    
+    v.visitChildren(module)
+    if (moduleNos == 0)
+    {
+        return
+    }
+    def value = 100.0 * ((double) largeClassesNos / moduleNos)
+    
+    result.addMetricValue(metricId, module, value)
+    
+    largeClassesNos = 0
+    moduleNos = 0
+}
+
+coreAccess.visitParserModel(v)
+
+if(systemNos > 0)
+{
+    def value = 100.0 * ((double) systemLargeClassesNos / systemNos)
+    result.addMetricValue(metricId, coreAccess, value)
+}
+]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+		<parameterDefinition name="topNumMethods" type="Integer" description="" defaultValue="10" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

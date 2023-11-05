@@ -1,0 +1,111 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description>Demonstrates how elements added via plugin can be used.</description>
+	<source><![CDATA[ICoreVisitor v = coreAccess.createVisitor()
+
+def numberOfWebResources = 0;
+def numberOfWebCalls = 0;
+def numberOfExternalWebResources = 0;
+
+def debug = false;
+
+v.onType()
+{
+    ITypeAccess type ->
+    if (type.isExcluded())
+    {
+        return;
+    }
+    v.visitChildren(type);
+}
+
+v.onGenericProgrammingElement
+{
+    IGenericProgrammingElementAccess element ->
+    
+    if (element instanceof PluginProgrammingElementAccess)
+    {
+        ppe = (PluginProgrammingElementAccess) element;
+        String pluginId = ppe.getMetaClass().getPluginId();
+        String metaClassName = ppe.getMetaClass().getName();
+        
+        if (debug)
+        {
+            println "\n-------------\n$element.name"
+            printParentHierarchy(element);
+            
+            println "\tmeta class: " + metaClassName;
+            println "\tpluginId " + pluginId;
+            println "\tprogramming element: " + element
+            println "\tclass: " + element.getClass().getCanonicalName();
+        }
+        
+        boolean add = true;
+        
+        switch(metaClassName)
+        {
+            case "com.hello2morrow.sonargraph.api.model.web.WebResource":
+            numberOfWebResources++;
+            break;
+            case "com.hello2morrow.sonargraph.api.model.web.WebCall":
+            numberOfWebCalls++;
+            break;
+            case "com.hello2morrow.sonargraph.api.model.web.ExternalWebResource":
+            numberOfExternalWebResources++;
+            break;
+            default:
+            add = false;
+            println "Not a web resource/call: " + element + ", metaClass " + metaClassName;
+        }
+        
+        if (add)
+        {
+            //Add elements so they show up in the elements tab, so we know what has been processed.
+            result.addElement(ppe)
+        }
+    }
+}
+
+//Traverse the model
+coreAccess.visitParserModel(v)
+
+if ((numberOfWebResources + numberOfWebCalls + numberOfExternalWebResources) == 0)
+{
+    println "No web elements found. Did you activate the 'Spring Microservices' or 'Swagger Plugin'?"
+}
+else
+{
+    def metricResources = coreAccess.getOrCreateMetricId("NumberOfWebResources", "Number of Web Resources",
+        "The number of methods exposed via HTTP",
+        false, "Web")
+    result.addMetricValue(metricResources, coreAccess, numberOfWebResources);
+    
+    def metricCalls = coreAccess.getOrCreateMetricId("NumberOfWebCalls", "Number of Calls to Web Resources",
+        "The number of calls to web resources",
+        false, "Web")
+    result.addMetricValue(metricCalls, coreAccess, numberOfWebCalls);
+    
+    def metricExternalResources = coreAccess.getOrCreateMetricId("NumberOfExternalWebResources", "Number of external Web Resources",
+        "The number of external web resources",
+        false, "Web")
+    result.addMetricValue(metricExternalResources, coreAccess, numberOfExternalWebResources);
+}
+
+def printParentHierarchy(IProgrammingElementAccess element)
+{
+    println "Parent hierarchy: ";
+    def parent = element.getParent();
+    while (parent != null)
+    {
+        println "\t" + parent.getName() + ", class: " + parent.getParent().getClass().getCanonicalName();
+        parent = parent.getParent();
+    }
+    println "\n"
+}
+]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>

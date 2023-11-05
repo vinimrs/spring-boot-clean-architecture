@@ -1,0 +1,94 @@
+<?xml version="1.0" ?>
+<script version="13.3.0.825">
+	<description></description>
+	<source><![CDATA[IArchitectureVisitor v = coreAccess.createArchitectureVisitor()
+
+def int sumOfLoc(List<IAssignableElementAccess> elements)
+{
+    int loc = 0;
+    
+    elements.forEach()
+    {
+        IComponentAccess comp = it.asComponent()
+        
+        if (comp != null)
+        {
+            // Only works for physical models
+            comp.getSources().forEach()
+            {
+                ISourceFileAccess src ->
+                
+                loc += src.getLinesOfCodeMetric();
+            }
+        }
+        else
+        {
+            // Logical model. Asssignable elements are top-level programming elememts in namespaces.
+            // For Java and C# you have types on the top level, in C/C++ it can be anything
+            ITypeAccess type = it.asType();
+            
+            if (type == null)
+            {
+                INamedElementAccess element = it.asElement();
+                
+                // element will not be null
+            }
+        }
+    }
+    return loc;
+}
+
+v.onArchitectureModel()
+{
+    IArchitectureModelAccess model ->
+    
+    println("Model: " + model.modelName)
+    v.visitChildren(model)
+    println("")
+}
+
+v.onArtifact()
+{
+    IArtifactAccess artifact ->
+    
+    int loc = sumOfLoc(artifact.getAssignedElements())
+    
+    println(artifact.name + ": " + loc)
+    v.visitChildren(artifact)
+}
+
+v.onConnector()
+{
+    IConnectorAccess conn ->
+    
+    println(" connector: " + conn.name + ": " + sumOfLoc(conn.getAssignedElements()))
+}
+
+v.onInterface()
+{
+    IInterfaceAccess iface ->
+    
+    println(" interface: " + iface.name + ": " + sumOfLoc(iface.getAssignedElements()))
+}
+
+v.onUnassignedExternal()
+{
+    IUnassignedExternalAccess ue ->
+    
+    println("Unassignd External: "+ sumOfLoc(ue.getAssignedElements()))
+}
+
+v.onUnassignedInternal()
+{
+    IUnassignedInternalAccess ui ->
+    
+    println("Unassigned Internal: "+ sumOfLoc(ui.getAssignedElements()))
+}
+
+coreAccess.visitActiveArchitectureModels(v)]]></source>
+	<parameterDefinitions>
+		<parameterDefinition name="timeout" type="Integer" description="When scripts are scheduled for automated execution they time out after the specified number of seconds. The timeout must be greater than '0'." defaultValue="10" candidates=""></parameterDefinition>
+		<parameterDefinition name="output" type="String" description="When a path is specified the output of the script is written into this file. The use of an absolute path (i.e. starting with '/' or 'C:/') is not recommended. It might not be cross-platform compatible." defaultValue="" candidates=""></parameterDefinition>
+	</parameterDefinitions>
+	<languages></languages>
+</script>
