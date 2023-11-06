@@ -27,8 +27,8 @@ Tal sistema foi projetado e desenvolvido durante o curso de _Desenvolvimento de 
 
 As funcinalidades deste sistema foram baseadas no [documento de requisitos](https://github.com/vinimrs/AA3/blob/main/requisitos.pdf) proposto pelo professor durante a disciplina.
 
-- `Funcionalidade 1` `Gerenciamento de usuários`: O sistema permite que um super usuário (administrador) gerencie (CRUD) todos os usuários do sistema, tais como locaodoras e clientes.
-- `Funcionalidade 2` `Locação de bicicletas`: O sistema permite que clientes aluguem bicicletas em certa data das locadoras disponíveis no sistema.
+- `Funcionalidade 1` `Gerenciamento de usuários`: O sistema permite que um super usuário (administrador) gerencie (CRUD) todos os usuários do sistema, tais como locaodoras e costumers.
+- `Funcionalidade 2` `Locação de bicicletas`: O sistema permite que costumers aluguem bicicletas em certa data das rentalCompanies disponíveis no sistema.
 - `Funcionalidade 3` `Navegação sem login`: O sistema fornece interfaces para usuários não logados conseguirem utilizar o sistema sem um cadastro.
 - `Entre outras...`.
 
@@ -49,7 +49,7 @@ cd AA3/
 
 Após isso, abra o projeto em sua IDE java de preferência (foi utilizado a IntelliJ IDEA para o desenvolvimento). E inicialize a aplicação na versão 20 do Java pela classe `LocadoraAplicattion`.
 
-Será necessário criar um banco de dados local chamado `locadora` no SGBD postgresql com super usuário `postgres` e senha `postgres`.
+Será necessário criar um banco de dados local chamado `rentalCompany` no SGBD postgresql com super usuário `postgres` e senha `postgres`.
 
 Depois de inicializar você pode testar a API a partir de serviços como o [Postman](https://www.postman.com/). Importe a [coleção de requisições](https://github.com/vinimrs/AA3/blob/main/requests.json) no serviço escolhido e comece a testar. Você pode seguir o [tutorial de importação](https://learning.postman.com/docs/getting-started/importing-and-exporting/importing-data/#importing-postman-data) do Postman se for utilizá-lo.  
 
