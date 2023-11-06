@@ -9,17 +9,17 @@ public class RentalCompany extends User {
 
   private String cnpj;
   private String city;
-  private List<Rental> locacoes;
+  private List<Rental> rentals;
 
   public RentalCompany() {
-    this.role = "ROLE_LOCADORA";
+    this.role = "ROLE_RENTALCOMPANY";
   }
 
   public RentalCompany(String username, String password, String name, String email, String cnpj, String city) {
     super(username, password, name, email);
     this.city = city;
     this.cnpj = cnpj;
-    this.role = "ROLE_LOCADORA";
+    this.role = "ROLE_RENTALCOMPANY";
 
   }
 
@@ -40,11 +40,11 @@ public class RentalCompany extends User {
     this.city = city;
   }
 
-  public List<Rental> getLocacoes() {
-    return locacoes;
+  public List<Rental> getRentals() {
+    return rentals;
   }
 
-  public void setLocacoes(List<Rental> locacoes) {
-    this.locacoes = locacoes;
+  public void setRentals(List<Rental> rentals) {
+    this.rentals = rentals;
   }
 }

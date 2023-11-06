@@ -1,8 +1,8 @@
 package br.ufscar.dc.dsw.bikerental.infrastructure.admin.controller;
 
 import br.ufscar.dc.dsw.bikerental.entity.admin.exception.AdminNotFoundException;
-import br.ufscar.dc.dsw.bikerental.infrastructure.admin.dto.DadosAtualizacaoAdmin;
-import br.ufscar.dc.dsw.bikerental.infrastructure.admin.dto.DadosPublicosAdmin;
+import br.ufscar.dc.dsw.bikerental.infrastructure.admin.dto.AdminUpdateData;
+import br.ufscar.dc.dsw.bikerental.infrastructure.admin.dto.AdminPublicData;
 import br.ufscar.dc.dsw.bikerental.usecase.admin.UpdateAdminUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -19,8 +19,8 @@ public class UpdateAdminController {
 
     @PutMapping("/admins/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public DadosPublicosAdmin updateAdmin(@PathVariable Long id, @Valid @RequestBody DadosAtualizacaoAdmin dados) throws AdminNotFoundException {
-        return new DadosPublicosAdmin(updateAdminUseCase.execute(id, dados));
+    public AdminPublicData updateAdmin(@PathVariable Long id, @Valid @RequestBody AdminUpdateData dados) throws AdminNotFoundException {
+        return new AdminPublicData(updateAdminUseCase.execute(id, dados));
     }
 
 }

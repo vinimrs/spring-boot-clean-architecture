@@ -1,7 +1,7 @@
 package br.ufscar.dc.dsw.bikerental.entity.rental.gateway;
 
 
-import br.ufscar.dc.dsw.bikerental.entity.costumer.model.Costumer;
+import br.ufscar.dc.dsw.bikerental.entity.customer.model.Customer;
 import br.ufscar.dc.dsw.bikerental.entity.rental.model.Rental;
 import br.ufscar.dc.dsw.bikerental.entity.rentalCompany.model.RentalCompany;
 
@@ -16,7 +16,7 @@ public interface RentalGateway {
 
     List<Rental> findAllByRentalCompany(RentalCompany rentalCompany);
 
-    List<Rental> findAllByClient(Costumer client);
+    List<Rental> findAllByCustomer(Customer customer);
 
     List<Rental> findAll();
 }

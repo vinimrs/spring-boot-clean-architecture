@@ -1,7 +1,7 @@
 package br.ufscar.dc.dsw.bikerental.infrastructure.admin.controller;
 
 import br.ufscar.dc.dsw.bikerental.entity.admin.model.Admin;
-import br.ufscar.dc.dsw.bikerental.infrastructure.admin.dto.DadosPublicosAdmin;
+import br.ufscar.dc.dsw.bikerental.infrastructure.admin.dto.AdminPublicData;
 import br.ufscar.dc.dsw.bikerental.usecase.admin.SearchAdminUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,10 +21,10 @@ public class SearchAdminController {
 
     @GetMapping("/admins")
     @ResponseStatus(HttpStatus.OK)
-    public List<DadosPublicosAdmin> searchCliente() {
+    public List<AdminPublicData> searchAdmin() {
         List<Admin> admins = this.searchAdminUseCase.execute();
 
-        return admins.stream().map(DadosPublicosAdmin::new).toList();
+        return admins.stream().map(AdminPublicData::new).toList();
     }
 
 }

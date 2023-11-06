@@ -1,7 +1,7 @@
 package br.ufscar.dc.dsw.bikerental.entity.rental.model;
 
 import br.ufscar.dc.dsw.bikerental.entity.AbstractEntity;
-import br.ufscar.dc.dsw.bikerental.entity.costumer.model.Costumer;
+import br.ufscar.dc.dsw.bikerental.entity.customer.model.Customer;
 import br.ufscar.dc.dsw.bikerental.entity.rentalCompany.model.RentalCompany;
 
 import java.time.LocalDate;
@@ -11,10 +11,10 @@ public class Rental extends AbstractEntity<Long> {
   private LocalTime hour;
   private LocalDate date;
   private RentalCompany rentalCompany;
-  private Costumer client;
+  private Customer customer;
 
-  public Rental(LocalTime hour, LocalDate date, RentalCompany rentalCompany, Costumer client) {
-    this.client = client;
+  public Rental(LocalTime hour, LocalDate date, RentalCompany rentalCompany, Customer customer) {
+    this.customer = customer;
     this.hour = hour;
     this.date = date;
     this.rentalCompany = rentalCompany;
@@ -44,11 +44,11 @@ public class Rental extends AbstractEntity<Long> {
     this.rentalCompany = rentalCompany;
   }
 
-  public Costumer getClient() {
-    return client;
+  public Customer getCustomer() {
+    return customer;
   }
 
-  public void setClient(Costumer client) {
-    this.client = client;
+  public void setCustomer(Customer customer) {
+    this.customer = customer;
   }
 }

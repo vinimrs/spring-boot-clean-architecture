@@ -1,7 +1,7 @@
 package br.ufscar.dc.dsw.bikerental.infrastructure.admin.controller;
 
-import br.ufscar.dc.dsw.bikerental.infrastructure.admin.dto.DadosCadastroAdmin;
-import br.ufscar.dc.dsw.bikerental.infrastructure.admin.dto.DadosPublicosAdmin;
+import br.ufscar.dc.dsw.bikerental.infrastructure.admin.dto.AdminRegistrationData;
+import br.ufscar.dc.dsw.bikerental.infrastructure.admin.dto.AdminPublicData;
 import br.ufscar.dc.dsw.bikerental.usecase.admin.CreateAdminUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,8 +21,8 @@ public class CreateAdminController {
 
     @PostMapping("/admins")
     @ResponseStatus(HttpStatus.CREATED)
-    public DadosPublicosAdmin createCliente(@Valid @RequestBody DadosCadastroAdmin dados) {
-        return new DadosPublicosAdmin(createAdminUseCase.execute(dados));
+    public AdminPublicData createAdmin(@Valid @RequestBody AdminRegistrationData dados) {
+        return new AdminPublicData(createAdminUseCase.execute(dados));
     }
 
 }

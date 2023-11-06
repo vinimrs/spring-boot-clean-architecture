@@ -1,19 +1,19 @@
 package br.ufscar.dc.dsw.bikerental.infrastructure.config.web;
 
 import br.ufscar.dc.dsw.bikerental.entity.admin.gateway.AdminGateway;
-import br.ufscar.dc.dsw.bikerental.entity.costumer.gateway.CostumerGateway;
+import br.ufscar.dc.dsw.bikerental.entity.customer.gateway.CustomerGateway;
 import br.ufscar.dc.dsw.bikerental.entity.rental.gateway.RentalGateway;
 import br.ufscar.dc.dsw.bikerental.entity.rentalCompany.gateway.RentalCompanyGateway;
 import br.ufscar.dc.dsw.bikerental.infrastructure.admin.gateway.AdminDatabaseGateway;
-import br.ufscar.dc.dsw.bikerental.infrastructure.cliente.gateway.CostumerDatabaseGateway;
+import br.ufscar.dc.dsw.bikerental.infrastructure.customer.gateway.CustomerDatabaseGateway;
 import br.ufscar.dc.dsw.bikerental.infrastructure.config.db.repository.AdminRepository;
-import br.ufscar.dc.dsw.bikerental.infrastructure.config.db.repository.ClienteRepository;
-import br.ufscar.dc.dsw.bikerental.infrastructure.config.db.repository.LocacaoRepository;
-import br.ufscar.dc.dsw.bikerental.infrastructure.config.db.repository.LocadoraRepository;
-import br.ufscar.dc.dsw.bikerental.infrastructure.locacao.gateway.RentalDatabaseGateway;
-import br.ufscar.dc.dsw.bikerental.infrastructure.locadora.gateway.RentalCompanyDatabaseGateway;
+import br.ufscar.dc.dsw.bikerental.infrastructure.config.db.repository.CustomerRepository;
+import br.ufscar.dc.dsw.bikerental.infrastructure.config.db.repository.RentalRepository;
+import br.ufscar.dc.dsw.bikerental.infrastructure.config.db.repository.RentalCompanyRepository;
+import br.ufscar.dc.dsw.bikerental.infrastructure.rental.gateway.RentalDatabaseGateway;
+import br.ufscar.dc.dsw.bikerental.infrastructure.rentalCompany.gateway.RentalCompanyDatabaseGateway;
 import br.ufscar.dc.dsw.bikerental.usecase.admin.*;
-import br.ufscar.dc.dsw.bikerental.usecase.costumer.*;
+import br.ufscar.dc.dsw.bikerental.usecase.customer.*;
 import br.ufscar.dc.dsw.bikerental.usecase.rental.*;
 import br.ufscar.dc.dsw.bikerental.usecase.rentalCompany.*;
 import org.springframework.context.annotation.Bean;
@@ -36,69 +36,69 @@ public class MvcConfig {
   }
 
   @Bean
-  public CreateClienteUseCase createClienteUseCase(ClienteRepository clienteRepository) {
-    CostumerGateway costumerGateway = new CostumerDatabaseGateway(clienteRepository);
-    return new CreateClienteUseCase(costumerGateway);
+  public CreateCustomerUseCase createCustomerUseCase(CustomerRepository customerRepository) {
+    CustomerGateway customerGateway = new CustomerDatabaseGateway(customerRepository);
+    return new CreateCustomerUseCase(customerGateway);
   }
 
   @Bean
-  public GetClienteUseCase getClienteUseCase(ClienteRepository clienteRepository) {
-    CostumerGateway costumerGateway = new CostumerDatabaseGateway(clienteRepository);
-    return new GetClienteUseCase(costumerGateway);
+  public GetCustomerUseCase getCustomerUseCase(CustomerRepository customerRepository) {
+    CustomerGateway customerGateway = new CustomerDatabaseGateway(customerRepository);
+    return new GetCustomerUseCase(customerGateway);
   }
 
   @Bean
-  public SearchClienteUseCase searchClienteUseCase(ClienteRepository clienteRepository) {
-    CostumerGateway costumerGateway = new CostumerDatabaseGateway(clienteRepository);
-    return new SearchClienteUseCase(costumerGateway);
+  public SearchCustomerUseCase searchCustomerUseCase(CustomerRepository customerRepository) {
+    CustomerGateway customerGateway = new CustomerDatabaseGateway(customerRepository);
+    return new SearchCustomerUseCase(customerGateway);
   }
 
   @Bean
-  public UpdateClienteUseCase updateClienteUseCase(ClienteRepository clienteRepository) {
-    CostumerGateway costumerGateway = new CostumerDatabaseGateway(clienteRepository);
-    return new UpdateClienteUseCase(costumerGateway);
+  public UpdateCustomerUseCase updateCustomerUseCase(CustomerRepository customerRepository) {
+    CustomerGateway customerGateway = new CustomerDatabaseGateway(customerRepository);
+    return new UpdateCustomerUseCase(customerGateway);
   }
 
   @Bean
-  public DeleteClienteUseCase deleteClienteUseCase(ClienteRepository clienteRepository) {
-    CostumerGateway costumerGateway = new CostumerDatabaseGateway(clienteRepository);
-    return new DeleteClienteUseCase(costumerGateway);
+  public DeleteCustomerUseCase deleteCustomerUseCase(CustomerRepository customerRepository) {
+    CustomerGateway customerGateway = new CustomerDatabaseGateway(customerRepository);
+    return new DeleteCustomerUseCase(customerGateway);
   }
 
   @Bean
-  public CreateLocadoraUseCase createLocadoraUseCase(LocadoraRepository locadoraRepository) {
-    RentalCompanyGateway rentalCompanyGateway = new RentalCompanyDatabaseGateway(locadoraRepository);
-    return new CreateLocadoraUseCase(rentalCompanyGateway);
+  public CreateRentalCompanyUseCase createRentalCompanyUseCase(RentalCompanyRepository rentalCompanyRepository) {
+    RentalCompanyGateway rentalCompanyGateway = new RentalCompanyDatabaseGateway(rentalCompanyRepository);
+    return new CreateRentalCompanyUseCase(rentalCompanyGateway);
   }
 
   @Bean
-  public GetLocadoraUseCase getLocadoraUseCase(LocadoraRepository locadoraRepository) {
-    RentalCompanyGateway rentalCompanyGateway = new RentalCompanyDatabaseGateway(locadoraRepository);
-    return new GetLocadoraUseCase(rentalCompanyGateway);
+  public GetRentalCompanyUseCase getRentalCompanyUseCase(RentalCompanyRepository rentalCompanyRepository) {
+    RentalCompanyGateway rentalCompanyGateway = new RentalCompanyDatabaseGateway(rentalCompanyRepository);
+    return new GetRentalCompanyUseCase(rentalCompanyGateway);
   }
 
   @Bean
-  public SearchLocadoraUseCase searchLocadoraUseCase(LocadoraRepository locadoraRepository) {
-    RentalCompanyGateway rentalCompanyGateway = new RentalCompanyDatabaseGateway(locadoraRepository);
-    return new SearchLocadoraUseCase(rentalCompanyGateway);
+  public SearchRentalCompanyUseCase searchRentalCompanyUseCase(RentalCompanyRepository rentalCompanyRepository) {
+    RentalCompanyGateway rentalCompanyGateway = new RentalCompanyDatabaseGateway(rentalCompanyRepository);
+    return new SearchRentalCompanyUseCase(rentalCompanyGateway);
   }
 
   @Bean
-  public UpdateLocadoraUseCase updateLocadoraUseCase(LocadoraRepository locadoraRepository) {
-    RentalCompanyGateway rentalCompanyGateway = new RentalCompanyDatabaseGateway(locadoraRepository);
-    return new UpdateLocadoraUseCase(rentalCompanyGateway);
+  public UpdateRentalCompanyUseCase updateRentalCompanyUseCase(RentalCompanyRepository rentalCompanyRepository) {
+    RentalCompanyGateway rentalCompanyGateway = new RentalCompanyDatabaseGateway(rentalCompanyRepository);
+    return new UpdateRentalCompanyUseCase(rentalCompanyGateway);
   }
 
   @Bean
-  public DeleteLocadoraUseCase deleteLocadoraUseCase(LocadoraRepository locadoraRepository) {
-    RentalCompanyGateway rentalCompanyGateway = new RentalCompanyDatabaseGateway(locadoraRepository);
-    return new DeleteLocadoraUseCase(rentalCompanyGateway);
+  public DeleteRentalCompanyUseCase deleteRentalCompanyUseCase(RentalCompanyRepository rentalCompanyRepository) {
+    RentalCompanyGateway rentalCompanyGateway = new RentalCompanyDatabaseGateway(rentalCompanyRepository);
+    return new DeleteRentalCompanyUseCase(rentalCompanyGateway);
   }
 
   @Bean
-  public FindLocadorasByCityUseCase findLocadorasByCityUseCase(LocadoraRepository locadoraRepository) {
-    RentalCompanyGateway rentalCompanyGateway = new RentalCompanyDatabaseGateway(locadoraRepository);
-    return new FindLocadorasByCityUseCase(rentalCompanyGateway);
+  public FindRentalCompaniesByCityUseCase findRentalCompaniesByCityUseCase(RentalCompanyRepository rentalCompanyRepository) {
+    RentalCompanyGateway rentalCompanyGateway = new RentalCompanyDatabaseGateway(rentalCompanyRepository);
+    return new FindRentalCompaniesByCityUseCase(rentalCompanyGateway);
   }
 
   @Bean
@@ -132,45 +132,45 @@ public class MvcConfig {
   }
 
   @Bean
-  public DeleteRentalUseCase deleteLocacaoUseCase(LocacaoRepository locacaoRepository) {
-    RentalGateway rentalGateway = new RentalDatabaseGateway(locacaoRepository);
+  public DeleteRentalUseCase deleteRentalUseCase(RentalRepository rentalRepository) {
+    RentalGateway rentalGateway = new RentalDatabaseGateway(rentalRepository);
     return new DeleteRentalUseCase(rentalGateway);
   }
 
   @Bean
-  public CreateRentalUseCase createLocacaoUseCase(LocacaoRepository locacaoRepository, LocadoraRepository locadoraRepository, ClienteRepository clienteRepository) {
-    RentalGateway rentalGateway = new RentalDatabaseGateway(locacaoRepository);
-    RentalCompanyGateway rentalCompanyGateway = new RentalCompanyDatabaseGateway(locadoraRepository);
-    CostumerGateway costumerGateway = new CostumerDatabaseGateway(clienteRepository);
+  public CreateRentalUseCase createRentalUseCase(RentalRepository rentalRepository, RentalCompanyRepository rentalCompanyRepository, CustomerRepository customerRepository) {
+    RentalGateway rentalGateway = new RentalDatabaseGateway(rentalRepository);
+    RentalCompanyGateway rentalCompanyGateway = new RentalCompanyDatabaseGateway(rentalCompanyRepository);
+    CustomerGateway customerGateway = new CustomerDatabaseGateway(customerRepository);
 
-    return new CreateRentalUseCase(rentalGateway, rentalCompanyGateway, costumerGateway);
+    return new CreateRentalUseCase(rentalGateway, rentalCompanyGateway, customerGateway);
   }
 
   @Bean
-  public GetRentalUseCase getLocacaoUseCase(LocacaoRepository locacaoRepository) {
-    RentalGateway rentalGateway = new RentalDatabaseGateway(locacaoRepository);
+  public GetRentalUseCase getRentalUseCase(RentalRepository rentalRepository) {
+    RentalGateway rentalGateway = new RentalDatabaseGateway(rentalRepository);
     return new GetRentalUseCase(rentalGateway);
   }
 
   @Bean
-  public ListRentalsByRentalCompanyUseCase listLocacoesByLocadoraUseCase(LocacaoRepository locacaoRepository, LocadoraRepository locadoraRepository) {
-    RentalGateway rentalGateway = new RentalDatabaseGateway(locacaoRepository);
-    RentalCompanyGateway rentalCompanyGateway = new RentalCompanyDatabaseGateway(locadoraRepository);
+  public ListRentalsByRentalCompanyUseCase listRentalsByRentalCompanyUseCase(RentalRepository rentalRepository, RentalCompanyRepository rentalCompanyRepository) {
+    RentalGateway rentalGateway = new RentalDatabaseGateway(rentalRepository);
+    RentalCompanyGateway rentalCompanyGateway = new RentalCompanyDatabaseGateway(rentalCompanyRepository);
 
     return new ListRentalsByRentalCompanyUseCase(rentalGateway, rentalCompanyGateway);
   }
 
   @Bean
-  public ListRentalsByCostumerUseCase listLocacoesByClienteUseCase(LocacaoRepository locacaoRepository, ClienteRepository clienteRepository) {
-    RentalGateway rentalGateway = new RentalDatabaseGateway(locacaoRepository);
-    CostumerGateway costumerGateway = new CostumerDatabaseGateway(clienteRepository);
+  public ListRentalsByCustomerUseCase listRentalsByCustomerUseCase(RentalRepository rentalRepository, CustomerRepository customerRepository) {
+    RentalGateway rentalGateway = new RentalDatabaseGateway(rentalRepository);
+    CustomerGateway customerGateway = new CustomerDatabaseGateway(customerRepository);
 
-    return new ListRentalsByCostumerUseCase(rentalGateway, costumerGateway);
+    return new ListRentalsByCustomerUseCase(rentalGateway, customerGateway);
   }
 
   @Bean
-  public SearchRentalsUseCase searchLocacaoUseCase(LocacaoRepository locacaoRepository) {
-    RentalGateway rentalGateway = new RentalDatabaseGateway(locacaoRepository);
+  public SearchRentalsUseCase searchRentalsUseCase(RentalRepository rentalRepository) {
+    RentalGateway rentalGateway = new RentalDatabaseGateway(rentalRepository);
     return new SearchRentalsUseCase(rentalGateway);
   }
 }
